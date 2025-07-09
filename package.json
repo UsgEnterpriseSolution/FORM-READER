@@ -1,0 +1,7 @@
+{
+  "name": "doc-extractor",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}
