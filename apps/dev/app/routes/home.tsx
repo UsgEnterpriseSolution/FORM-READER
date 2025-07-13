@@ -1,10 +1,12 @@
+import Navbar from "~/components/Navbar";
 import type { Route } from "./+types/home";
-import { Button } from "~/components/ui/button";
+import Upload from "~/components/Upload";
 
 export default function Home({}: Route.ComponentProps) {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Button>Click me</Button>
-    </div>
+    <main className="mx-auto h-full max-w-[1280px]">
+      <Navbar />
+      <Upload />
+    </main>
   );
 }

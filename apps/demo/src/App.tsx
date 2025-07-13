@@ -47,22 +47,22 @@ const FileUploader: React.FC<{
 
   return (
     <div className="w-full">
-      <h2 className="text-lg font-semibold text-gray-700 mb-2">
+      <h2 className="mb-2 text-lg font-semibold text-gray-700">
         Upload Document
       </h2>
       <div
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        className="flex flex-col items-center justify-center w-full p-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
+        className="flex w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-8 transition-colors hover:bg-gray-50"
         onClick={() => !disabled && fileInputRef.current?.click()}
       >
-        <CloudUploadIcon className="w-12 h-12 text-gray-400" />
+        <CloudUploadIcon className="h-12 w-12 text-gray-400" />
         <p className="mt-4 text-gray-600">Drag & drop your file here</p>
         <p className="text-gray-500">or</p>
         <button
           type="button"
           disabled={disabled}
-          className="mt-2 px-6 py-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 disabled:bg-gray-300 transition-colors"
+          className="mt-2 rounded-md bg-blue-500 px-6 py-2 font-semibold text-white transition-colors hover:bg-blue-600 disabled:bg-gray-300"
         >
           Upload Document
         </button>
@@ -84,15 +84,15 @@ const Preview: React.FC<{ file: File | null; previewUrl: string | null }> = ({
   file,
   previewUrl,
 }) => (
-  <div className="w-full mt-6">
-    <h2 className="text-lg font-semibold text-gray-700 mb-2">Preview</h2>
-    <div className="w-full h-64 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+  <div className="mt-6 w-full">
+    <h2 className="mb-2 text-lg font-semibold text-gray-700">Preview</h2>
+    <div className="flex h-64 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-100">
       {previewUrl ? (
         file?.type.startsWith("image/") ? (
           <img
             src={previewUrl}
             alt="Document Preview"
-            className="object-contain h-full w-full"
+            className="h-full w-full object-contain"
           />
         ) : (
           <iframe
@@ -103,7 +103,7 @@ const Preview: React.FC<{ file: File | null; previewUrl: string | null }> = ({
         )
       ) : (
         <div className="text-center text-gray-400">
-          <ImageIcon className="w-16 h-16 mx-auto" />
+          <ImageIcon className="mx-auto h-16 w-16" />
           <p className="mt-2">No document uploaded</p>
         </div>
       )}
@@ -120,7 +120,7 @@ const FormField: React.FC<{
 }> = ({ label, value, confidence, isEditing, onChange }) => {
   return (
     <div className="relative mb-4">
-      <label className="block text-sm font-medium text-gray-600 mb-1">
+      <label className="mb-1 block text-sm font-medium text-gray-600">
         {label}
       </label>
       <input
@@ -128,13 +128,13 @@ const FormField: React.FC<{
         value={value}
         disabled={!isEditing}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500 transition-colors"
+        className="w-full rounded-md border border-gray-300 bg-gray-50 p-2 transition-colors disabled:bg-gray-200 disabled:text-gray-500"
       />
       {confidence === "high" && (
-        <CheckCircleIcon className="absolute right-3 top-8 w-6 h-6 text-green-500" />
+        <CheckCircleIcon className="absolute top-8 right-3 h-6 w-6 text-green-500" />
       )}
       {confidence === "low" && (
-        <ExclamationTriangleIcon className="absolute right-3 top-8 w-6 h-6 text-yellow-500" />
+        <ExclamationTriangleIcon className="absolute top-8 right-3 h-6 w-6 text-yellow-500" />
       )}
     </div>
   );
@@ -160,7 +160,7 @@ export default function App() {
       setIsEditing(false);
       setError(null);
     },
-    [previewUrl]
+    [previewUrl],
   );
 
   const handleExtract = async () => {
@@ -174,12 +174,12 @@ export default function App() {
         setExtractedData(data);
       } else {
         setError(
-          "Failed to extract information. The AI couldn't process the document."
+          "Failed to extract information. The AI couldn't process the document.",
         );
       }
     } catch (e) {
       setError(
-        "An API error occurred. Please check your API key and try again."
+        "An API error occurred. Please check your API key and try again.",
       );
       console.error(e);
     } finally {
@@ -195,7 +195,7 @@ export default function App() {
   };
 
   const isDataExtracted = Object.values(extractedData).some(
-    (field) => field.confidence !== "none"
+    (field) => field.confidence !== "none",
   );
 
   const handleSubmit = () => {
@@ -210,12 +210,14 @@ export default function App() {
   };
 
   return (
-    <div className="bg-slate-50 min-h-screen font-sans flex flex-col items-center py-10 px-4">
+    <div className="flex min-h-screen flex-col items-center bg-slate-50 px-4 py-10 font-sans">
       <header className="mb-8">
-        <h1 className="text-4xl font-bold text-gray-800">DocExtract AI</h1>
+        <h1 className="text-4xl font-bold text-gray-800">
+          DocExtract AI (Demo)
+        </h1>
       </header>
-      <main className="w-full max-w-5xl bg-white p-8 rounded-xl shadow-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <main className="w-full max-w-5xl rounded-xl bg-white p-8 shadow-lg">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Left Column */}
           <div className="flex flex-col">
             <FileUploader
@@ -226,7 +228,7 @@ export default function App() {
           </div>
           {/* Right Column */}
           <div className="flex flex-col">
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">
+            <h2 className="mb-2 text-lg font-semibold text-gray-700">
               Extracted Information
             </h2>
             <div className="flex-grow">
@@ -260,22 +262,22 @@ export default function App() {
               />
             </div>
             {error && (
-              <div className="text-red-500 text-sm mt-2 mb-4">{error}</div>
+              <div className="mt-2 mb-4 text-sm text-red-500">{error}</div>
             )}
-            <div className="space-y-3 mt-4">
+            <div className="mt-4 space-y-3">
               <button
                 onClick={handleExtract}
                 disabled={!file || isProcessing}
-                className="w-full flex items-center justify-center p-3 bg-cyan-500 text-white rounded-lg font-semibold hover:bg-cyan-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                className="flex w-full items-center justify-center rounded-lg bg-cyan-500 p-3 font-semibold text-white transition-all hover:bg-cyan-600 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
                 {isProcessing ? (
                   <>
-                    <SpinnerIcon className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
+                    <SpinnerIcon className="mr-3 -ml-1 h-5 w-5 animate-spin text-white" />
                     Extracting...
                   </>
                 ) : (
                   <>
-                    <DocumentScanIcon className="h-5 w-5 mr-2" />
+                    <DocumentScanIcon className="mr-2 h-5 w-5" />
                     Extract Information
                   </>
                 )}
@@ -283,17 +285,17 @@ export default function App() {
               <button
                 onClick={() => setIsEditing(!isEditing)}
                 disabled={!isDataExtracted || isProcessing}
-                className="w-full flex items-center justify-center p-3 bg-slate-200 text-slate-700 rounded-lg font-semibold hover:bg-slate-300 disabled:bg-slate-100 disabled:text-slate-400 disabled:cursor-not-allowed transition-all"
+                className="flex w-full items-center justify-center rounded-lg bg-slate-200 p-3 font-semibold text-slate-700 transition-all hover:bg-slate-300 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
               >
-                <PencilIcon className="h-5 w-5 mr-2" />
+                <PencilIcon className="mr-2 h-5 w-5" />
                 {isEditing ? "Lock Fields" : "Edit Manually"}
               </button>
               <button
                 onClick={handleSubmit}
                 disabled={!isDataExtracted || isProcessing}
-                className="w-full flex items-center justify-center p-3 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+                className="flex w-full items-center justify-center rounded-lg bg-green-500 p-3 font-semibold text-white transition-all hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-300"
               >
-                <SendIcon className="h-5 w-5 mr-2" />
+                <SendIcon className="mr-2 h-5 w-5" />
                 Submit
               </button>
             </div>
