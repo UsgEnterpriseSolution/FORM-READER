@@ -223,7 +223,7 @@ export default function Upload() {
               size={16}
               aria-hidden="true"
             />
-            <span>Submit to AI</span>
+            <span>Extract details</span>
           </Button>
         </>
       )}

@@ -18,7 +18,7 @@ const steps = [
   },
   {
     step: 3,
-    title: "Confirm",
+    title: "Submit",
   },
 ];
 
