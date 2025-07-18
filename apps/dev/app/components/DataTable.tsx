@@ -1,19 +1,27 @@
 import { Form } from "react-router";
 import { Table, TableBody, TableCell, TableRow } from "~/components/ui/table";
 import { Input } from "./ui/input";
+import { ImageZoom } from "./ui/image-zoom";
 
 export default function DataTable() {
   return (
-    <section className="flex h-fit gap-4 border-2 border-dashed p-4">
-      <DataTablePreview />
-      <DataTableForm />
+    <section className="space-y-2">
+      <div className="bg-secondary grid size-10 place-content-center rounded-full">
+        10
+      </div>
+      <div className="flex h-fit gap-4 border-2 border-dashed p-4">
+        <DataTablePreview />
+        <DataTableForm />
+      </div>
     </section>
   );
 }
 
 function DataTablePreview() {
   return (
-    <img src="/placeholder.jpg" className="h-[250px] w-[200] rounded-sm" />
+    <ImageZoom>
+      <img src="/placeholder.jpg" className="h-[250px] w-[200] rounded-sm" />
+    </ImageZoom>
   );
 }
 
