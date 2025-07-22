@@ -5,7 +5,7 @@ import {
   Trash2Icon,
   UploadCloudIcon,
 } from "lucide-react";
-import { formatBytes, type FileWithPreview } from "~/hooks/use-file-upload";
+import { formatBytes, type FileWithPreview } from "~/hooks/useFileUpload";
 import { Button } from "~/components/ui/button";
 import {
   Table,
@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import UploadModal from "~/components/UploadModal";
-import getFileIcon from "~/utils/getFIleIcons";
+import { getFileIcon } from "~/utils/elements";
 import { useNavigation } from "react-router";
 
 type UploadTableProps = {
@@ -33,7 +33,7 @@ export default function UploadTable({
   removeFile,
 }: UploadTableProps) {
   const navigation = useNavigation();
-  const isPageLoading = navigation.state === "loading";
+  const isPageLoading = navigation.state === "submitting";
 
   return (
     <>

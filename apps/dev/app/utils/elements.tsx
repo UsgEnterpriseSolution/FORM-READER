@@ -8,7 +8,7 @@ import {
   VideoIcon,
 } from "lucide-react";
 
-export default function getFileIcon(file: {
+export function getFileIcon(file: {
   file: File | { type: string; name: string };
 }) {
   const fileType = file.file instanceof File ? file.file.type : file.file.type;

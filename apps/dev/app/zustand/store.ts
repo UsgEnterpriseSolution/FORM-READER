@@ -1,18 +1,14 @@
 import { create } from "zustand";
-import type { FileWithPreview } from "~/hooks/use-file-upload";
+import type { FieldData } from "~/types";
 
 type State = {
-  images: FileWithPreview[];
-  formData: FormData | null;
-  appData: {
-    isProcessing: boolean;
-    successMsg: string;
-    errorMsg: string;
-  };
+  images: string[];
+  fieldData: FieldData | undefined;
 };
 
 type Actions = {
-  processImg: () => Promise<void>;
+  addImage: (dataURL: string[]) => void;
+  addFieldData: (fieldData: FieldData) => void;
 };
 
 type AppStore = {
@@ -20,83 +16,25 @@ type AppStore = {
   actions: Actions;
 };
 
-const useAppStore = create<AppStore>((set, get) => ({
+export const useAppStore = create<AppStore>((set, get) => ({
   state: {
     images: [],
-    formData: null,
-    appData: {
-      isProcessing: false,
-      successMsg: "",
-      errorMsg: "",
-    },
+    fieldData: undefined,
   },
   actions: {
-    processImg: async () => {
-      const { appData, images } = get().state;
-
-      if (appData.isProcessing) return;
-      else {
-        set((state) => ({
-          state: {
-            ...state.state,
-            appData: {
-              ...state.state.appData,
-              isProcessing: true,
-              successMsg: "",
-              errorMsg: "",
-            },
-          },
-        }));
-      }
-
-      try {
-        const imgDataUrlList = images.map((image) => image.preview);
-        const orgin = window.location.origin;
-
-        const response = await fetch(orgin + "/api/extract", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(imgDataUrlList),
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(errorText || "Failed to process image.");
-        }
-
-        const data: FormData = await response.json();
-
-        console.log(data);
-
-        set((state) => ({
-          state: {
-            ...state.state,
-            appData: {
-              ...state.state.appData,
-              isProcessing: false,
-              successMsg: "Image processed successfully.",
-              errorMsg: "",
-            },
-          },
-        }));
-      } catch (error: any) {
-        set((state) => ({
-          state: {
-            ...state.state,
-            appData: {
-              ...state.state.appData,
-              isProcessing: false,
-              successMsg: "",
-              errorMsg: error.message || "An error occurred.",
-            },
-          },
-        }));
-      }
+    addImage: (images) => {
+      set((store) => ({
+        state: { ...store.state, images: [...store.state.images, ...images] },
+      }));
+    },
+    addFieldData: (data) => {
+      set((store) => ({
+        state: { ...store.state, fieldData: data },
+      }));
     },
   },
 }));
 
 export const useImages = () => useAppStore((store) => store.state.images);
-export const useFormData = () => useAppStore((store) => store.state.formData);
-export const useAppData = () => useAppStore((store) => store.state.appData);
+export const useFieldData = () => useAppStore((store) => store.state.fieldData);
 export const useActions = () => useAppStore((store) => store.actions);
