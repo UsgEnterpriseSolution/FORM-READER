@@ -13,7 +13,7 @@ import { Switch } from "~/components/ui/switch";
 import { PhoneInput } from "~/components/PhoneInput";
 import { Button } from "~/components/ui/button";
 import {
-  Form,
+  Form as ShadcnForm,
   FormControl,
   FormDescription,
   FormField,
@@ -30,6 +30,7 @@ import {
 import { cn } from "~/lib/utils";
 import { Calendar } from "~/components/ui/calendar";
 import type { FieldData } from "~/types";
+import { Form } from "react-router";
 
 type ReviewFormProps = {
   hookForm: UseFormReturn<FieldData>;
@@ -38,11 +39,8 @@ type ReviewFormProps = {
 export default function ReviewForm({ hookForm }: ReviewFormProps) {
   return (
     <section>
-      <Form {...hookForm}>
-        <form
-          className="space-y-4"
-          onSubmit={hookForm.handleSubmit(() => console.log("submitted"))}
-        >
+      <ShadcnForm {...hookForm}>
+        <Form id="review-form" method="POST" className="space-y-4">
           <section className="space-y-2">
             <p className="text-sm text-zinc-600">Employee details</p>
             <div className="h-fit space-y-3 border-2 border-dashed p-4">
@@ -918,13 +916,8 @@ export default function ReviewForm({ hookForm }: ReviewFormProps) {
               />
             </div>
           </section>
-
-          <div className="flex h-fit justify-between">
-            <Button variant="secondary">Back</Button>
-            <Button variant="default">Submit</Button>
-          </div>
-        </form>
-      </Form>
+        </Form>
+      </ShadcnForm>
     </section>
   );
 }

@@ -9,8 +9,13 @@ import { useAppStore, useFieldData, useImages } from "~/zustand/store";
 
 import ReviewForm from "~/components/ReviewForm";
 import ReviewImage from "~/components/ReviewImage";
+import { Button } from "~/components/ui/button";
 
-export async function action({}: Route.ActionArgs) {}
+export async function action({}: Route.ActionArgs) {
+  await new Promise((res) => setTimeout(res, 3000));
+
+  return redirect(href("/submit"));
+}
 
 export function clientLoader({}: Route.ClientLoaderArgs) {
   const store = useAppStore.getState();
@@ -30,8 +35,14 @@ export default function Review({}: Route.ComponentProps) {
   });
 
   return (
-    <section className="space-y-4 px-4 py-6">
-      <div className="grid grid-cols-1 place-content-center gap-6 md:grid-cols-[192px_504px]">
+    <section id="Review" className="space-y-4 px-4 py-6">
+      <div className="mx-auto flex h-fit max-w-[814px] justify-between">
+        <Button variant="secondary">Back</Button>
+        <Button type="submit" form="review-form" variant="default">
+          Submit
+        </Button>
+      </div>
+      <div className="grid max-w-[814px] grid-cols-1 place-content-center gap-6 md:mx-auto md:grid-cols-2">
         <ReviewImage images={images} />
         <ReviewForm hookForm={form} />
       </div>

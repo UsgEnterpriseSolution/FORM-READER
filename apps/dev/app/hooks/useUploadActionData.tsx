@@ -9,7 +9,7 @@ import { useActions } from "~/zustand/store";
 export default function useUploadActionData(
   actionData: ActionRes<UploadActionRes> | undefined,
 ) {
-  const { addImage, addFieldData } = useActions();
+  const { setImage, setFieldData } = useActions();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,8 +21,8 @@ export default function useUploadActionData(
       } else {
         const data = zodObj.data;
 
-        addImage(data.images);
-        addFieldData(data.fieldData);
+        setImage(data.images);
+        setFieldData(data.fieldData);
         toast.success("Image(s) processed successfully.");
 
         navigate(href("/review"));

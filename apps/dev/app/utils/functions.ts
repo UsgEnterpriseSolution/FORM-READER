@@ -18,13 +18,13 @@ export async function convertToDataUrl(file: File): Promise<string> {
   });
 }
 
-export function getMockData() {
+export function getMockData(images: string[]): any {
   return {
-    images: ["", ""],
+    images,
     fieldData: {
       employeeData: {
         employeeNo: "USG0112",
-        dateOfEngagement: null,
+        dateOfEngagement: "2025-07-05",
         subsidiary: "Enterprise Solutions",
         department: "Enterprise Solutions",
         subunit: "ERP Solutions & Utils",
@@ -35,26 +35,26 @@ export function getMockData() {
           firstName: "EDWIN",
           middleName: "OTU",
           otherName: "KOFI",
-          maidenSurName: null,
+          maidenSurName: "",
         },
-        dateOfBirth: "23 MARCH 2001",
+        dateOfBirth: "2001-03-23",
         nationality: "GHANAIAN",
         sex: "MALE",
         ghCard: "GA-7274169556",
-        ssnit: null,
-        bankers: null,
+        ssnit: "",
+        bankers: "",
         nameOfSpouse: {
           isMarried: false,
-          surName: null,
-          firstName: null,
-          middleName: null,
-          otherName: null,
+          surName: "",
+          firstName: "",
+          middleName: "",
+          otherName: "",
         },
         contact: {
-          postal: null,
+          postal: "",
           email: "edwinotumartinson@outlook.com",
           mobilePhone: "+233242430112",
-          homePhone: null,
+          homePhone: "",
           homeTown: "SENYA BREKU",
           residentialAddress: "GA-067-4830",
         },
@@ -66,19 +66,19 @@ export function getMockData() {
           name: {
             surName: "MARTINOSN",
             firstName: "KELCY AMANOR",
-            middleName: null,
-            otherName: null,
+            middleName: "",
+            otherName: "",
           },
           relationship: "BROTHER",
           address: "AO-0458944",
-          phoneNo: "0207111985 (+233)",
+          phoneNo: "+233207111985",
         },
         emmergencyContact: {
           name: {
             surName: "MARTINSON",
             firstName: "CYNTHIA",
-            middleName: null,
-            otherName: null,
+            middleName: "",
+            otherName: "",
           },
           relationship: "MOTHER",
           address: "AO-0458944",

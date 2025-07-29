@@ -1,8 +1,27 @@
+import { href, useNavigate } from "react-router";
 import { BadgeCheck } from "lucide-react";
+
 import type { Route } from "./+types/submit";
 import { Button } from "~/components/ui/button";
+import { useAppStore } from "~/zustand/store";
+
+export function clientLoader() {
+  useAppStore.setState(() => ({
+    state: {
+      images: [],
+      fieldData: undefined,
+      settings: { engine: null, configId: null },
+    },
+  }));
+}
 
 export default function Submit({}: Route.ComponentProps) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate(href("/"));
+  };
+
   return (
     <section className="mx-4 mt-10 flex h-fit max-w-[608px] flex-col items-center justify-center gap-6 rounded-md border-2 border-dashed p-4 sm:mx-auto">
       <div className="flex flex-col items-center justify-center gap-2">
@@ -10,7 +29,9 @@ export default function Submit({}: Route.ComponentProps) {
         <h3>Entries submitted successfully</h3>
       </div>
 
-      <Button variant="default">New Upload</Button>
+      <Button variant="default" onClick={handleClick}>
+        New Upload
+      </Button>
     </section>
   );
 }

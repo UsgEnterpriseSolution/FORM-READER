@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Sparkles } from "lucide-react";
+import { Settings, Sparkles } from "lucide-react";
 import { href } from "react-router";
 
 import Stepper from "./Stepper";
@@ -11,7 +11,7 @@ export default function Navbar() {
   try {
     pathname = window.location.pathname;
   } catch (error) {
-    console.error(error);
+    console.error("Window not defined.");
   }
 
   useEffect(() => {
@@ -21,10 +21,7 @@ export default function Navbar() {
   return (
     <header className="border-b px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Sparkles />
-          <span className="font-medium">AI Extractor</span>
-        </div>
+        <Sparkles />
 
         <div className="flex gap-6">
           <Stepper index={1} isActive={path === href("/")}>
@@ -37,6 +34,8 @@ export default function Navbar() {
             Submit
           </Stepper>
         </div>
+
+        <Settings />
       </div>
     </header>
   );

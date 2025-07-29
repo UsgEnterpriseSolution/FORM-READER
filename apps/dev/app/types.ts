@@ -19,3 +19,5 @@ export type ActionRes<T> =
     };
 
 export type UploadActionRes = z.infer<typeof uploadActionDataSchema>;
+
+export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";

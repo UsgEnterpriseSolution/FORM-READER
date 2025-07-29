@@ -1,7 +1,6 @@
 import {
+  CircleChevronRight,
   DownloadIcon,
-  Loader2Icon,
-  Sparkles,
   Trash2Icon,
   UploadCloudIcon,
 } from "lucide-react";
@@ -58,16 +57,8 @@ export default function UploadTable({
 
           <UploadModal>
             <Button size={"sm"} disabled={isPageLoading}>
-              {isPageLoading ? (
-                <Loader2Icon className="animate-spin" />
-              ) : (
-                <Sparkles
-                  className="-me-1 opacity-60"
-                  size={16}
-                  aria-hidden="true"
-                />
-              )}
-              <span>Extract details</span>
+              <span>Proceed</span>
+              <CircleChevronRight />
             </Button>
           </UploadModal>
         </div>
