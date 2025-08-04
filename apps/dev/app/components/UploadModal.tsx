@@ -26,12 +26,16 @@ import { useActions, useSettings } from "~/zustand/store";
 import { Button } from "./ui/button";
 import { useRef } from "react";
 import { toast } from "sonner";
+import { useLoaderData } from "react-router";
+import type { loader } from "~/routes/upload";
 
 type ExtractModalProps = {
   children: React.ReactNode;
 };
 
 export default function UploadModal({ children }: ExtractModalProps) {
+  const loaderData = useLoaderData<typeof loader>();
+
   const { setEngine, setConfigId } = useActions();
   const settings = useSettings();
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -65,10 +69,10 @@ export default function UploadModal({ children }: ExtractModalProps) {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Forms</SelectLabel>
-              <SelectItem value="DUMMY">Dummy Form</SelectItem>
-              <SelectItem value="PERSONAL_DETAILS">
-                Personal Details Form
-              </SelectItem>
+              {loaderData.status === "success" &&
+                loaderData.data.configs.map((config) => (
+                  <SelectItem value={config.value}>{config.label}</SelectItem>
+                ))}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -83,9 +87,10 @@ export default function UploadModal({ children }: ExtractModalProps) {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Engines</SelectLabel>
-              <SelectItem value="GOOGLE">Google</SelectItem>
-              <SelectItem value="OLLAMA">Ollama</SelectItem>
-              <SelectItem value="LMSTUDIO">LM Studio</SelectItem>
+              {loaderData.status === "success" &&
+                loaderData.data.engines.map((engine) => (
+                  <SelectItem value={engine.value}>{engine.label}</SelectItem>
+                ))}
             </SelectGroup>
           </SelectContent>
         </Select>

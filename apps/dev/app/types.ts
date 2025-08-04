@@ -9,7 +9,7 @@ export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";
 
 // Response types
 
-export type ActionRes<T> =
+export type AppResponse<T> =
   | {
       status: "success";
       data: T;
@@ -25,6 +25,17 @@ export type ActionRes<T> =
     };
 
 export type UploadActionRes = z.infer<typeof uploadActionDataSchema>;
+
+export type UploadLoaderRes = {
+  configs: Array<{
+    label: string;
+    value: string;
+  }>;
+  engines: Array<{
+    label: string;
+    value: Engine;
+  }>;
+};
 
 // Config Types
 

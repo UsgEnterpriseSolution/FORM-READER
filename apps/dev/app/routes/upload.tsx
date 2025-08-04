@@ -1,5 +1,10 @@
 import type { Route } from "./+types/upload";
-import type { ActionRes, Engine, UploadActionRes } from "~/types";
+import type {
+  AppResponse,
+  Engine,
+  UploadActionRes,
+  UploadLoaderRes,
+} from "~/types";
 import { useFileUpload } from "~/hooks/useFileUpload";
 
 import UploadTable from "~/components/UploadTable";
@@ -8,10 +13,11 @@ import UploadDesc from "~/components/UploadDesc";
 import useUploadActionData from "~/hooks/useUploadActionData";
 import UploadForm from "~/components/UploadForm";
 import LLM from "~/logic/llm";
+import Config from "~/logic/config";
 
 export async function action({
   request,
-}: Route.ActionArgs): Promise<ActionRes<UploadActionRes>> {
+}: Route.ActionArgs): Promise<AppResponse<UploadActionRes>> {
   try {
     // await new Promise((res) => setTimeout(res, 3000));
 
@@ -24,6 +30,37 @@ export async function action({
     return {
       status: "success",
       data: { images, fieldData },
+    };
+  } catch (error) {
+    return {
+      code: 500,
+      status: "error",
+      message: error instanceof Error ? error.message : (error as string),
+    };
+  }
+}
+
+export async function loader(): Promise<AppResponse<UploadLoaderRes>> {
+  try {
+    const configs = await Config.getAll();
+
+    if (configs === null) {
+      throw new Error("Failed to load configs");
+    }
+
+    return {
+      status: "success",
+      data: {
+        configs: configs.map((config) => ({
+          label: config.title,
+          value: config.configId,
+        })),
+        engines: [
+          { label: "Google", value: "GOOGLE" },
+          { label: "LM Studio", value: "LMSTUDIO" },
+          { label: "Ollama", value: "OLLAMA" },
+        ],
+      },
     };
   } catch (error) {
     return {

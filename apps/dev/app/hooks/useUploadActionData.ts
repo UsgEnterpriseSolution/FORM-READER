@@ -2,12 +2,12 @@ import { useEffect } from "react";
 import { href, useNavigate } from "react-router";
 import { toast } from "sonner";
 
-import type { ActionRes, UploadActionRes } from "~/types";
+import type { AppResponse, UploadActionRes } from "~/types";
 import { uploadActionDataSchema } from "~/zod";
 import { useActions } from "~/zustand/store";
 
 export default function useUploadActionData(
-  actionData: ActionRes<UploadActionRes> | undefined,
+  actionData: AppResponse<UploadActionRes> | undefined,
 ) {
   const { setImage, setFieldData } = useActions();
   const navigate = useNavigate();

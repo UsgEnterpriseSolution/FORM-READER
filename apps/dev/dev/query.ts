@@ -2,9 +2,9 @@ import { db } from "~/db/database";
 import { tbConfig, type InsertConfig } from "~/db/schema/tbConfig";
 
 const configA: InsertConfig = {
-  configId: "0d5f4b4f-e0f0-423c-aab2-da941af4e874",
-  title: "Example Details Form",
-  description: "This is just a form to test configurations.",
+  configId: "bfece89d-3e98-42b2-b818-c89f811f5863",
+  title: "Dummy Details Form",
+  description: "This is just a config to test the config functionality.",
   fields: [
     {
       type: "text",
@@ -93,7 +93,7 @@ const configA: InsertConfig = {
 
 async function addConfig(data: InsertConfig) {
   try {
-    await db.insert(tbConfig).values(data);
+    await db.insert(tbConfig).values({ ...data });
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.message);
@@ -101,4 +101,17 @@ async function addConfig(data: InsertConfig) {
   }
 }
 
-addConfig(configA);
+// addConfig(configA);
+
+async function getConfigs() {
+  try {
+    const results = await db.select().from(tbConfig);
+    console.log(results);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error.message);
+    } else console.error(error);
+  }
+}
+
+// getConfigs();
