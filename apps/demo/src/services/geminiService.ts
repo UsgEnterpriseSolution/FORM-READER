@@ -16,7 +16,7 @@ const fileToGenerativePart = async (file: File) => {
 };
 
 export async function extractInfoFromDoc(
-  file: File
+  file: File,
 ): Promise<ExtractedData | null> {
   if (!process.env.API_KEY) {
     throw new Error("API_KEY environment variable not set");
@@ -41,7 +41,7 @@ export async function extractInfoFromDoc(
 
   try {
     const response: GenerateContentResponse = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-04-17",
+      model: "gemini-2.5-flash",
       contents: { parts: [imagePart, { text: prompt }] },
       config: {
         responseMimeType: "application/json",
@@ -72,7 +72,7 @@ export async function extractInfoFromDoc(
     } else {
       console.error(
         "Parsed data does not match expected structure:",
-        parsedData
+        parsedData,
       );
       return null;
     }

@@ -1,0 +1,1 @@
+ALTER TABLE `tb_config` ADD `description` text NOT NULL;

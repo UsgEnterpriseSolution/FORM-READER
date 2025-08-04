@@ -1,0 +1,23 @@
+{
+  "name": "app-server",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "build": "tsc",
+    "tsx": "tsx",
+    "dev": "tsx watch ./src/main.ts",
+    "file:watch": "tsx ./src/example.ts",
+    "ts:compile": "tsc"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.3"
+  },
+  "dependencies": {
+    "@ai-sdk/openai-compatible": "^0.2.16",
+    "@lmstudio/sdk": "^1.3.0",
+    "ai": "^4.3.19",
+    "ollama-ai-provider": "^1.2.0",
+    "react-medium-image-zoom": "^5.3.0",
+    "zustand": "^5.0.6"
+  }
+}
