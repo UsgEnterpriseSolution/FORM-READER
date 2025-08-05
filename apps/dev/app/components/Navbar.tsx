@@ -27,7 +27,7 @@ export default function Navbar() {
           <Stepper index={1} isActive={path === href("/")}>
             Upload
           </Stepper>
-          <Stepper index={2} isActive={path === href("/review")}>
+          <Stepper index={2} isActive={path?.includes("/review/")}>
             Review
           </Stepper>
           <Stepper index={3} isActive={path === href("/submit")}>

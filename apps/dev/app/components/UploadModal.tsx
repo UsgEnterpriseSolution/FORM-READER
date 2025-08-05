@@ -70,8 +70,10 @@ export default function UploadModal({ children }: ExtractModalProps) {
             <SelectGroup>
               <SelectLabel>Forms</SelectLabel>
               {loaderData.status === "success" &&
-                loaderData.data.configs.map((config) => (
-                  <SelectItem value={config.value}>{config.label}</SelectItem>
+                loaderData.data.configs.map((config, index) => (
+                  <SelectItem key={index} value={config.value}>
+                    {config.label}
+                  </SelectItem>
                 ))}
             </SelectGroup>
           </SelectContent>
@@ -88,8 +90,10 @@ export default function UploadModal({ children }: ExtractModalProps) {
             <SelectGroup>
               <SelectLabel>Engines</SelectLabel>
               {loaderData.status === "success" &&
-                loaderData.data.engines.map((engine) => (
-                  <SelectItem value={engine.value}>{engine.label}</SelectItem>
+                loaderData.data.engines.map((engine, index) => (
+                  <SelectItem key={index} value={engine.value}>
+                    {engine.label}
+                  </SelectItem>
                 ))}
             </SelectGroup>
           </SelectContent>

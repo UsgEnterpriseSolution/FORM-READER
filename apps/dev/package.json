@@ -36,6 +36,7 @@
     "dotenv": "^17.2.1",
     "drizzle-orm": "^0.44.4",
     "isbot": "^5.1.27",
+    "lru-cache": "^5.1.1",
     "lucide-react": "^0.525.0",
     "next-themes": "^0.4.6",
     "ollama-ai-provider": "^1.2.0",
@@ -47,6 +48,7 @@
     "react-medium-image-zoom": "^5.3.0",
     "react-phone-number-input": "^3.4.12",
     "react-router": "^7.5.3",
+    "rm": "^0.1.8",
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "zod": "^3.25.76"
@@ -54,6 +56,7 @@
   "devDependencies": {
     "@react-router/dev": "^7.5.3",
     "@tailwindcss/vite": "^4.1.4",
+    "@types/lru-cache": "^7.10.9",
     "@types/node": "^20",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { fieldDataSchema, uploadActionDataSchema } from "./zod";
+import type { fieldDataSchema, imgFieldDataSchema } from "./zod";
 
 // Form types
 
@@ -24,7 +24,7 @@ export type AppResponse<T> =
       code: number;
     };
 
-export type UploadActionRes = z.infer<typeof uploadActionDataSchema>;
+export type ImgFieldData = z.infer<typeof imgFieldDataSchema>;
 
 export type UploadLoaderRes = {
   configs: Array<{

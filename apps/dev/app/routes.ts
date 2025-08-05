@@ -8,7 +8,7 @@ import {
 export default [
   layout("layout/AppLayout.tsx", [
     index("routes/upload.tsx"),
-    route("review", "routes/review.tsx"),
+    route("review/:key?", "routes/review.tsx"),
     route("submit", "routes/submit.tsx"),
   ]),
 ] satisfies RouteConfig;

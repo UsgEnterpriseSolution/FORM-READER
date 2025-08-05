@@ -63,7 +63,7 @@ export const fieldDataSchema = z.object({
   }),
 });
 
-export const uploadActionDataSchema = z.object({
+export const imgFieldDataSchema = z.object({
   images: z.array(z.string()),
   fieldData: fieldDataSchema,
 });

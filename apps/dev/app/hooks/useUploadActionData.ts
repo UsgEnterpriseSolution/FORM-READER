@@ -2,19 +2,19 @@ import { useEffect } from "react";
 import { href, useNavigate } from "react-router";
 import { toast } from "sonner";
 
-import type { AppResponse, UploadActionRes } from "~/types";
-import { uploadActionDataSchema } from "~/zod";
+import type { AppResponse, ImgFieldData } from "~/types";
+import { imgFieldDataSchema } from "~/zod";
 import { useActions } from "~/zustand/store";
 
 export default function useUploadActionData(
-  actionData: AppResponse<UploadActionRes> | undefined,
+  actionData: AppResponse<ImgFieldData> | undefined,
 ) {
   const { setImage, setFieldData } = useActions();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (actionData && actionData.status === "success") {
-      const zodObj = uploadActionDataSchema.safeParse(actionData.data);
+      const zodObj = imgFieldDataSchema.safeParse(actionData.data);
 
       if (!zodObj.success) {
         toast.error("Response data validation failed.");

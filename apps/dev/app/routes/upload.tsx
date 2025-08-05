@@ -1,36 +1,46 @@
+import crypto from "node:crypto";
+import { href, redirect } from "react-router";
+
 import type { Route } from "./+types/upload";
-import type {
-  AppResponse,
-  Engine,
-  UploadActionRes,
-  UploadLoaderRes,
-} from "~/types";
-import { useFileUpload } from "~/hooks/useFileUpload";
+import type { AppResponse, Engine, UploadLoaderRes } from "~/types";
 
 import UploadTable from "~/components/UploadTable";
 import UploadError from "~/components/UploadErrors";
 import UploadDesc from "~/components/UploadDesc";
-import useUploadActionData from "~/hooks/useUploadActionData";
 import UploadForm from "~/components/UploadForm";
+import { useFileUpload } from "~/hooks/useFileUpload";
+
 import LLM from "~/logic/llm";
 import Config from "~/logic/config";
+import { AppCache } from "~/services/cache";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { fieldDataSchema } from "~/zod";
 
 export async function action({
   request,
-}: Route.ActionArgs): Promise<AppResponse<UploadActionRes>> {
+}: Route.ActionArgs): Promise<Response | AppResponse<null>> {
   try {
-    // await new Promise((res) => setTimeout(res, 3000));
+    await new Promise((res) => setTimeout(res, 2000));
 
     const formData = await request.formData();
     const images: string[] = JSON.parse(formData.get("images") as string);
     const engine = formData.get("engine") as Engine;
 
     const fieldData = await LLM.extract(engine, images);
+    const zodObj = fieldDataSchema.safeParse(fieldData);
 
-    return {
-      status: "success",
-      data: { images, fieldData },
-    };
+    if (!zodObj.success) {
+      return {
+        status: "fail",
+        message: "Invalid LLM json output",
+      };
+    }
+
+    const cacheKey = crypto.randomUUID();
+    AppCache.put(cacheKey, { images, fieldData });
+
+    return redirect(href("/review/:key?", { key: cacheKey }));
   } catch (error) {
     return {
       code: 500,
@@ -72,8 +82,6 @@ export async function loader(): Promise<AppResponse<UploadLoaderRes>> {
 }
 
 export default function Upload({ actionData }: Route.ComponentProps) {
-  useUploadActionData(actionData);
-
   const maxSize = 10 * 1024 * 1024;
   const maxFiles = 10;
 
@@ -83,6 +91,16 @@ export default function Upload({ actionData }: Route.ComponentProps) {
     maxSize,
     accept: "image/*",
   });
+
+  useEffect(() => {
+    if (actionData && actionData.status === "fail") {
+      toast.warning(actionData.message);
+    }
+
+    if (actionData && actionData.status === "error") {
+      toast.error(actionData.message);
+    }
+  }, [actionData]);
 
   return (
     <section className="mx-4 flex h-fit max-w-[608px] flex-col gap-4 pt-10 sm:mx-auto">
