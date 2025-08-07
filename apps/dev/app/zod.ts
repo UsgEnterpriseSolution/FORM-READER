@@ -67,3 +67,19 @@ export const imgFieldDataSchema = z.object({
   images: z.array(z.string()),
   fieldData: fieldDataSchema,
 });
+
+export const fieldSchema = z.object({});
+
+export const config = z.object({
+  id: z.number(),
+  configId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  fields: z.array(fieldSchema),
+});
+
+export const reviewPayloadSchema = z.object({
+  images: z.array(z.string()),
+  config: config,
+  schema: z.object({}),
+});

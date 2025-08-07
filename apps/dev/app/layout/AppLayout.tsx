@@ -11,7 +11,7 @@ export default function AppLayout() {
       <Navbar />
       <Outlet />
       <Toaster richColors />
-      {navigation.state !== "idle" && <AppSpinner />}
+      {navigation.state === "loading" && <AppSpinner />}
     </main>
   );
 }

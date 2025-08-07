@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { toast } from "sonner";
 import { href, redirect } from "react-router";
 
 import type { Route } from "./+types/upload";
@@ -12,35 +13,36 @@ import { useFileUpload } from "~/hooks/useFileUpload";
 
 import LLM from "~/logic/llm";
 import Config from "~/logic/config";
-import { AppCache } from "~/services/cache";
+import { appCache } from "~/services/cache";
 import { useEffect } from "react";
-import { toast } from "sonner";
-import { fieldDataSchema } from "~/zod";
 
 export async function action({
   request,
 }: Route.ActionArgs): Promise<Response | AppResponse<null>> {
   try {
-    await new Promise((res) => setTimeout(res, 2000));
+    // await new Promise((res) => setTimeout(res, 2000));
 
     const formData = await request.formData();
+
     const images: string[] = JSON.parse(formData.get("images") as string);
     const engine = formData.get("engine") as Engine;
+    const configId = formData.get("configId") as string;
 
-    const fieldData = await LLM.extract(engine, images);
-    const zodObj = fieldDataSchema.safeParse(fieldData);
+    const config = await Config.get(configId);
 
-    if (!zodObj.success) {
+    if (config === null) {
       return {
         status: "fail",
-        message: "Invalid LLM json output",
+        message: "Invalid config Id",
       };
+    } else {
+      const fieldData = await LLM.extract(engine, images, config.schema);
+
+      const cacheKey = crypto.randomUUID();
+      appCache.put(cacheKey, { configId, images, fieldData });
+
+      return redirect(href("/review/:key?", { key: cacheKey }));
     }
-
-    const cacheKey = crypto.randomUUID();
-    AppCache.put(cacheKey, { images, fieldData });
-
-    return redirect(href("/review/:key?", { key: cacheKey }));
   } catch (error) {
     return {
       code: 500,

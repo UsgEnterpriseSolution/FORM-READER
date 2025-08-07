@@ -1,10 +1,9 @@
 import { google } from "@ai-sdk/google";
 import { ollama } from "ollama-ai-provider";
-import { generateObject, type CoreMessage } from "ai";
-// import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { Chat, LMStudioClient } from "@lmstudio/sdk";
+import { generateObject, jsonSchema, type CoreMessage } from "ai";
+// import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
-import { fieldDataSchema } from "~/zod";
 import type { Engine } from "~/types";
 
 // const lmstudio = createOpenAICompatible({
@@ -24,41 +23,56 @@ class LLM {
     `- Empty date fields should be assigned a null value.` +
     `- Phone number filled should be given the country code (+233) ` +
     `if number is provided and code is not specified. eg 0252530002 -> +233252530002` +
-    `[IMPORTANT] All fields must respect the schema provided.`;
+    `[IMPORTANT] All fields must respect the AJV JSON schema provided.`;
 
-  private static message(images: string[]): CoreMessage {
-    return {
-      role: "user",
-      content: images.map((image) => ({
-        type: "image",
-        image: image,
-      })),
-    };
-  }
-
-  private static async askGoogle(message: CoreMessage) {
+  private static async askGoogle(
+    images: string[],
+    schema: object,
+  ): Promise<any> {
     const { object } = await generateObject({
       model: google("gemini-2.5-flash"),
       system: this.system,
-      schema: fieldDataSchema,
-      messages: [message],
+      schema: jsonSchema(schema),
+      messages: [
+        {
+          role: "user",
+          content: images.map((image) => ({
+            type: "image",
+            image: image,
+          })),
+        },
+      ],
     });
 
     return object;
   }
 
-  private static async askOllama(message: CoreMessage) {
+  private static async askOllama(
+    images: string[],
+    schema: object,
+  ): Promise<any> {
     const { object } = await generateObject({
       model: ollama("gemma3"),
       system: this.system,
-      schema: fieldDataSchema,
-      messages: [message],
+      schema: jsonSchema(schema),
+      messages: [
+        {
+          role: "user",
+          content: images.map((image) => ({
+            type: "image",
+            image: image,
+          })),
+        },
+      ],
     });
 
     return object;
   }
 
-  private static async askLMStudio(images: string[]) {
+  private static async askLMStudio(
+    images: string[],
+    schema: object,
+  ): Promise<any> {
     const client = new LMStudioClient();
     const model = await client.llm.model("google/gemma-3-12b");
 
@@ -78,9 +92,14 @@ class LLM {
       },
     ]);
 
-    const result = await model.respond(chat, { structured: fieldDataSchema });
+    const result = await model.respond(chat, {
+      structured: {
+        type: "json",
+        jsonSchema: schema,
+      },
+    });
 
-    return result.parsed;
+    return JSON.parse(result.content);
   }
 
   // private static async askLMStudio(message: CoreMessage) {
@@ -94,14 +113,14 @@ class LLM {
   //   return object;
   // }
 
-  public static async extract(flag: Engine, images: string[]) {
+  public static async extract(flag: Engine, images: string[], schema: object) {
     switch (flag) {
       case "LMSTUDIO":
-        return await this.askLMStudio(images);
+        return await this.askLMStudio(images, schema);
       case "OLLAMA":
-        return await this.askOllama(this.message(images));
+        return await this.askOllama(images, schema);
       case "GOOGLE":
-        return await this.askGoogle(this.message(images));
+        return await this.askGoogle(images, schema);
       default:
         throw new Error("Invalid flag");
     }

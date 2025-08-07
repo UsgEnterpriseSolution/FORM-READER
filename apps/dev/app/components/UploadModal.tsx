@@ -1,5 +1,4 @@
-import { Sparkles } from "lucide-react";
-import type React from "react";
+import { CircleChevronRight, Loader2Icon, Sparkles } from "lucide-react";
 
 import {
   AlertDialog,
@@ -24,38 +23,43 @@ import {
 } from "./ui/select";
 import { useActions, useSettings } from "~/zustand/store";
 import { Button } from "./ui/button";
-import { useRef } from "react";
-import { toast } from "sonner";
-import { useLoaderData } from "react-router";
+
+import { useLoaderData, useNavigation } from "react-router";
 import type { loader } from "~/routes/upload";
 
-type ExtractModalProps = {
-  children: React.ReactNode;
-};
+type ExtractModalProps = {};
 
-export default function UploadModal({ children }: ExtractModalProps) {
+export default function UploadModal({}: ExtractModalProps) {
   const loaderData = useLoaderData<typeof loader>();
+
+  const navigation = useNavigation();
+  const isPageSubmitting = navigation.state === "submitting";
 
   const { setEngine, setConfigId } = useActions();
   const settings = useSettings();
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const handleExtract = () => {
-    if (!settings.configId) {
-      toast.warning("Please select form type.");
-    } else if (!settings.engine) {
-      toast.warning("Please select an engine type.");
-    } else buttonRef.current?.click();
-  };
 
   return (
     <AlertDialog>
-      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
+        <Button size={"sm"} disabled={isPageSubmitting}>
+          {isPageSubmitting ? (
+            <Loader2Icon className="animate-spin" />
+          ) : (
+            <Sparkles
+              className="-me-1 opacity-60"
+              size={16}
+              aria-hidden="true"
+            />
+          )}
+          <span>Extract</span>
+        </Button>
+      </AlertDialogTrigger>
+
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Extract details</AlertDialogTitle>
+          <AlertDialogTitle>Extraction configuration</AlertDialogTitle>
           <AlertDialogDescription>
-            Configure options and extract
+            Choose your extraction options below.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -100,22 +104,15 @@ export default function UploadModal({ children }: ExtractModalProps) {
         </Select>
 
         <AlertDialogFooter>
-          <Button
-            ref={buttonRef}
-            className="sr-only"
-            type="submit"
-            form="image-form"
-          ></Button>
-
           <AlertDialogCancel>Cancel</AlertDialogCancel>
 
-          <AlertDialogAction onClick={handleExtract}>
-            <Sparkles
-              className="-me-1 opacity-60"
-              size={16}
-              aria-hidden="true"
-            />
-            <span>Extract</span>
+          <AlertDialogAction
+            type="submit"
+            form="image-form"
+            disabled={!settings.configId || !settings.engine}
+          >
+            <span>Proceed</span>
+            <CircleChevronRight />
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

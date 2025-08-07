@@ -1,9 +1,10 @@
 import { z } from "zod";
-import type { fieldDataSchema, imgFieldDataSchema } from "./zod";
+import type { fieldDataSchema } from "./zod";
+import type { SelectConfig } from "./db/schema/tbConfig";
 
-// Form types
+// Generic types
 
-export type FieldData = z.infer<typeof fieldDataSchema>;
+export type FieldData = z.infer<typeof fieldDataSchema>; // # Delete
 
 export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";
 
@@ -24,8 +25,6 @@ export type AppResponse<T> =
       code: number;
     };
 
-export type ImgFieldData = z.infer<typeof imgFieldDataSchema>;
-
 export type UploadLoaderRes = {
   configs: Array<{
     label: string;
@@ -35,6 +34,12 @@ export type UploadLoaderRes = {
     label: string;
     value: Engine;
   }>;
+};
+
+export type ReviewLoaderRes = {
+  images: string[];
+  config: SelectConfig | null;
+  fieldData: object;
 };
 
 // Config Types
@@ -53,7 +58,7 @@ type FieldValidation = {
 };
 
 type TextField = {
-  type: "text" | "email" | "number";
+  type: "text" | "email" | "number" | "phone";
 } & BaseField;
 
 type TextareaField = {
@@ -77,4 +82,4 @@ type CheckboxField = {
   defaultValue: boolean;
 };
 
-export type Fields = TextField | TextareaField | SelectField | CheckboxField;
+export type Field = TextField | TextareaField | SelectField | CheckboxField;

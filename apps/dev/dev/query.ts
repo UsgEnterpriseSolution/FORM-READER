@@ -3,8 +3,19 @@ import { tbConfig, type InsertConfig } from "~/db/schema/tbConfig";
 
 const configA: InsertConfig = {
   configId: "bfece89d-3e98-42b2-b818-c89f811f5863",
-  title: "Dummy Details Form",
-  description: "This is just a config to test the config functionality.",
+  title: "Example Form A",
+  description: "This is just a dummy form to test config functionality.",
+  schema: {
+    type: "object",
+    properties: {
+      surname: { type: "string" },
+      firstName: { type: "string" },
+      gender: { type: "string", enum: ["MALE", "FEMALE"] },
+      email: { type: "string" },
+      nationality: { type: "string" },
+      number: { type: "string" },
+    },
+  },
   fields: [
     {
       type: "text",
@@ -22,28 +33,6 @@ const configA: InsertConfig = {
       label: "First name",
       name: "firstName",
       placeholder: "eg: Chris",
-      defaultValue: "",
-      validation: {
-        isRequired: true,
-        regExp: "",
-      },
-    },
-    {
-      type: "email",
-      label: "Email",
-      name: "email",
-      placeholder: "eg: chrisamarfio@union.com",
-      defaultValue: "",
-      validation: {
-        isRequired: true,
-        regExp: "",
-      },
-    },
-    {
-      type: "number",
-      label: "Phone number",
-      name: "number",
-      placeholder: "eg: +233001122332",
       defaultValue: "",
       validation: {
         isRequired: true,
@@ -72,17 +61,22 @@ const configA: InsertConfig = {
       },
     },
     {
-      type: "select",
-      label: "Country",
-      name: "country",
-      placeholder: "Select your country",
+      type: "email",
+      label: "Email",
+      name: "email",
+      placeholder: "eg: chrisamarfio@union.com",
       defaultValue: "",
-      options: [
-        {
-          label: "location",
-          value: "location",
-        },
-      ],
+      validation: {
+        isRequired: true,
+        regExp: "",
+      },
+    },
+    {
+      type: "number",
+      label: "Phone number",
+      name: "number",
+      placeholder: "eg: +233001122332",
+      defaultValue: "",
       validation: {
         isRequired: true,
         regExp: "",
@@ -101,7 +95,7 @@ async function addConfig(data: InsertConfig) {
   }
 }
 
-// addConfig(configA);
+addConfig(configA);
 
 async function getConfigs() {
   try {

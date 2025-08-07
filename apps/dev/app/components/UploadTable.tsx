@@ -1,9 +1,4 @@
-import {
-  CircleChevronRight,
-  DownloadIcon,
-  Trash2Icon,
-  UploadCloudIcon,
-} from "lucide-react";
+import { DownloadIcon, Trash2Icon, UploadCloudIcon } from "lucide-react";
 import { formatBytes, type FileWithPreview } from "~/hooks/useFileUpload";
 import { Button } from "~/components/ui/button";
 import {
@@ -16,7 +11,6 @@ import {
 } from "~/components/ui/table";
 import UploadModal from "~/components/UploadModal";
 import { getFileIcon } from "~/utils/elements";
-import { useNavigation } from "react-router";
 
 type UploadTableProps = {
   files: FileWithPreview[];
@@ -31,9 +25,6 @@ export default function UploadTable({
   clearFiles,
   removeFile,
 }: UploadTableProps) {
-  const navigation = useNavigation();
-  const isPageLoading = navigation.state === "submitting";
-
   return (
     <>
       <div className="flex items-center justify-between gap-2">
@@ -55,12 +46,7 @@ export default function UploadTable({
             Remove all
           </Button>
 
-          <UploadModal>
-            <Button size={"sm"} disabled={isPageLoading}>
-              <span>Proceed</span>
-              <CircleChevronRight />
-            </Button>
-          </UploadModal>
+          <UploadModal />
         </div>
       </div>
 

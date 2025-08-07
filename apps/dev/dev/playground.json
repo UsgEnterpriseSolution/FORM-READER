@@ -1,0 +1,80 @@
+{
+  "schema": {
+    "type": "object",
+    "properties": {
+      "surname": { "type": "string" },
+      "firstName": { "type": "string" },
+      "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
+      "email": { "type": "string" },
+      "nationality": { "type": "string" },
+      "number": { "type": "string" }
+    }
+  },
+  "fields": [
+    {
+      "type": "text",
+      "label": "Surname",
+      "name": "surname",
+      "placeholder": "eg: Amarfio",
+      "defaultValue": "",
+      "validation": {
+        "isRequired": true,
+        "regExp": ""
+      }
+    },
+    {
+      "type": "text",
+      "label": "First name",
+      "name": "firstName",
+      "placeholder": "eg: Chris",
+      "defaultValue": "",
+      "validation": {
+        "isRequired": true,
+        "regExp": ""
+      }
+    },
+    {
+      "type": "select",
+      "label": "Gender",
+      "name": "gender",
+      "placeholder": "Select your gender",
+      "defaultValue": "",
+      "options": [
+        {
+          "label": "Male",
+          "value": "MALE"
+        },
+        {
+          "label": "Female",
+          "value": "FEMALE"
+        }
+      ],
+      "validation": {
+        "isRequired": true,
+        "regExp": ""
+      }
+    },
+    {
+      "type": "email",
+      "label": "Email",
+      "name": "email",
+      "placeholder": "eg: chrisamarfio@union.com",
+      "defaultValue": "",
+      "validation": {
+        "isRequired": true,
+        "regExp": ""
+      }
+    },
+    {
+      "type": "number",
+      "label": "Phone number",
+      "name": "number",
+      "placeholder": "eg: +233001122332",
+      "defaultValue": "",
+      "validation": {
+        "isRequired": true,
+        "regExp": ""
+      }
+    }
+  ]
+}

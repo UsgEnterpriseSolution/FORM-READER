@@ -1,5 +1,3 @@
-import type { ImgFieldData } from "~/types";
-
 type Node<K, V> = {
   key: K;
   value: V;
@@ -92,4 +90,10 @@ export class LRUCache<K, V> {
   }
 }
 
-export const AppCache = new LRUCache<string, ImgFieldData>(100);
+export type AppCache = {
+  configId: string;
+  images: string[];
+  fieldData: object;
+};
+
+export const appCache = new LRUCache<string, AppCache>(100);
