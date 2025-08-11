@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Settings, Sparkles } from "lucide-react";
-import { href } from "react-router";
+import { href, NavLink } from "react-router";
 
 import Stepper from "./Stepper";
 
@@ -21,7 +21,9 @@ export default function Navbar() {
   return (
     <header className="border-b px-4 md:px-6">
       <div className="flex h-16 items-center justify-between gap-4">
-        <Sparkles />
+        <NavLink to={href("/")} className="cursor-pointer">
+          <Sparkles />
+        </NavLink>
 
         <div className="flex gap-6">
           <Stepper index={1} isActive={path === href("/")}>
@@ -35,7 +37,9 @@ export default function Navbar() {
           </Stepper>
         </div>
 
-        <Settings />
+        <NavLink to={href("/config")} className="cursor-pointer">
+          <Settings />
+        </NavLink>
       </div>
     </header>
   );

@@ -42,7 +42,7 @@ export type ReviewLoaderRes = {
   fieldData: object;
 };
 
-// Config Types
+// Config Types used currently in DB/UI flows
 
 type BaseField = {
   name: string;
@@ -83,3 +83,22 @@ type CheckboxField = {
 };
 
 export type Field = TextField | TextareaField | SelectField | CheckboxField;
+
+// New Configuration Data Model (per project rules Step 2)
+export interface FormField {
+  name: string;
+  type: string;
+  label: string;
+  required: boolean;
+  options?: any[];
+  validation?: Record<string, any>;
+}
+
+export interface FormConfig {
+  id: string;
+  name: string;
+  description?: string;
+  fields: FormField[];
+  created: Date;
+  modified: Date;
+}
