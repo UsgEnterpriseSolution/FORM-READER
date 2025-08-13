@@ -10,13 +10,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 
-type ReviewBackModalProps = {
+type ReviewBlockerModelProps = {
   blocker: Blocker;
 };
 
-export default function ReviewBackModal({ blocker }: ReviewBackModalProps) {
+export default function ReviewBlockerModel({
+  blocker,
+}: ReviewBlockerModelProps) {
   return (
     <AlertDialog open>
       <AlertDialogContent>
@@ -25,21 +28,21 @@ export default function ReviewBackModal({ blocker }: ReviewBackModalProps) {
             className="flex size-9 shrink-0 items-center justify-center rounded-full border"
             aria-hidden="true"
           >
-            <CircleAlertIcon className="opacity-80" size={16} />
+            <CircleAlertIcon
+              className="stroke-destructive opacity-80"
+              size={16}
+            />
           </div>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Access Denied!</AlertDialogTitle>
             <AlertDialogDescription>
-              If you go back now, any extracted data might be lost. Are you sure
-              you want to leave this page?
+              You are not permitted to return to this page.
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={blocker.reset}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={blocker.proceed}>
-            Continue to upload
-          </AlertDialogAction>
+          <AlertDialogAction onClick={blocker.reset}>Okay</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

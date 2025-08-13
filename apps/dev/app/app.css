@@ -137,3 +137,11 @@ body {
     @apply bg-background text-foreground h-full;
   }
 }
+
+@layer utilities {
+  @media (width >= 48rem) {
+    .max-height {
+      height: calc(100% - 65px);
+    }
+  }
+}

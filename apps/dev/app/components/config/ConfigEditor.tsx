@@ -38,7 +38,16 @@ const baseValidationSchema = z.object({
 });
 
 const fieldSchema = z.object({
-  type: z.enum(["text", "email", "number", "textarea", "select", "checkbox"]),
+  type: z.enum([
+    "text",
+    "email",
+    "number",
+    "textarea",
+    "select",
+    "checkbox",
+    "date",
+    "phone",
+  ]),
   name: z
     .string()
     .min(1, "Name is required")
@@ -288,6 +297,13 @@ function FieldValidationEditor({
 import { useMemo, useState } from "react";
 import { generateAJVSchema } from "~/lib/generateAjvSchema";
 import Ajv from "ajv";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
+import { Lock } from "lucide-react";
 
 export default function ConfigEditor({
   defaultValues,
@@ -379,25 +395,7 @@ export default function ConfigEditor({
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="text-lg font-medium">Fields</div>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                append({
-                  type: "text",
-                  name: "",
-                  label: "",
-                  required: false,
-                  validation: {},
-                  options: [],
-                } as any)
-              }
-            >
-              Add field
-            </Button>
-          </div>
+          <div className="text-lg font-medium">Fields</div>
 
           {fields.length === 0 && (
             <div className="text-muted-foreground text-sm">
@@ -475,6 +473,8 @@ export default function ConfigEditor({
                                 <SelectItem value="text">Text</SelectItem>
                                 <SelectItem value="email">Email</SelectItem>
                                 <SelectItem value="number">Number</SelectItem>
+                                <SelectItem value="phone">Phone</SelectItem>
+                                <SelectItem value="date">Date</SelectItem>
                                 <SelectItem value="textarea">
                                   Textarea
                                 </SelectItem>
@@ -520,11 +520,17 @@ export default function ConfigEditor({
                       )}
                     />
 
+                    <FieldTypeSpecific
+                      index={idx}
+                      control={form.control}
+                      watchType={type}
+                    />
+
                     <FormField
                       control={form.control}
                       name={`fields.${idx}.required` as const}
                       render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="flex items-center">
                           <FormLabel>Required</FormLabel>
                           <FormControl>
                             <div className="flex h-9 items-center">
@@ -541,21 +547,31 @@ export default function ConfigEditor({
                   </div>
 
                   <div className="mt-2 space-y-3">
-                    <FieldTypeSpecific
-                      index={idx}
-                      control={form.control}
-                      watchType={type}
-                    />
-
-                    <div className="bg-muted/30 rounded-md p-3">
-                      <div className="mb-2 text-sm font-medium">
-                        Validation Rules
-                      </div>
-                      <FieldValidationEditor
-                        control={form.control}
-                        fieldIndex={idx}
-                      />
-                    </div>
+                    <Accordion
+                      type="single"
+                      collapsible
+                      className="w-full"
+                      defaultValue="3"
+                    >
+                      <AccordionItem value={"1"}>
+                        <AccordionTrigger className="py-2 text-[15px] leading-6 hover:no-underline">
+                          <span className="flex items-center gap-3">
+                            <Lock
+                              size={16}
+                              className="shrink-0 opacity-60"
+                              aria-hidden="true"
+                            />
+                            <span>Validation Rules</span>
+                          </span>
+                        </AccordionTrigger>
+                        <AccordionContent className="text-muted-foreground">
+                          <FieldValidationEditor
+                            control={form.control}
+                            fieldIndex={idx}
+                          />
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
                   </div>
 
                   <div className="mt-3 flex items-center justify-end gap-2">
@@ -603,7 +619,23 @@ export default function ConfigEditor({
           </div>
         </div> */}
 
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex items-center justify-between gap-3 pt-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() =>
+              append({
+                type: "text",
+                name: "",
+                label: "",
+                required: false,
+                validation: {},
+                options: [],
+              } as any)
+            }
+          >
+            Add field
+          </Button>
           <Button
             type="submit"
             disabled={!form.formState.isValid || form.formState.isSubmitting}

@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { href, redirect, useBlocker, useNavigate } from "react-router";
+import { href, redirect } from "react-router";
 
 import type { Route } from "./+types/review";
 
 import ReviewImage from "~/components/ReviewImage";
-import { Button } from "~/components/ui/button";
 import { appCache, type AppCache } from "~/services/cache";
 import type { AppResponse, ReviewLoaderRes } from "~/types";
 import Config from "~/logic/config";
 import ReviewForm from "~/components/ReviewForm";
 import type { SelectConfig } from "~/db/schema/tbConfig";
-import ReviewBackModal from "~/components/ReviewBackModal";
-import ReviewSubmitModal from "~/components/ReviewSubmitModal";
+import { Spinner } from "~/components/ui/Spinner";
 
 export async function action({}: Route.ActionArgs) {
   await new Promise((res) => setTimeout(res, 3000));
@@ -53,11 +51,6 @@ export default function Review({ loaderData }: Route.ComponentProps) {
   const [config, setConfig] = useState<SelectConfig | undefined>();
   const [images, setImages] = useState<string[]>([]);
   const [data, setData] = useState<any>({});
-  const navigate = useNavigate();
-
-  const backBlocker = useBlocker(
-    ({ nextLocation }) => nextLocation.pathname === href("/"),
-  );
 
   useEffect(() => {
     if (loaderData && loaderData.status === "success") {
@@ -80,22 +73,21 @@ export default function Review({ loaderData }: Route.ComponentProps) {
   }, [loaderData.status]);
 
   return (
-    <section id="Review" className="space-y-4 px-4 py-6">
-      {backBlocker.state === "blocked" && (
-        <ReviewBackModal blocker={backBlocker} />
-      )}
-
-      <div className="mx-auto flex h-fit max-w-[814px] justify-between">
-        <Button variant="secondary" onClick={() => navigate(href("/"))}>
-          Back
-        </Button>
-        <ReviewSubmitModal />
-      </div>
-
-      <div className="grid max-w-[814px] grid-cols-1 place-content-center gap-6 md:mx-auto md:grid-cols-2">
+    <div className="max-height grid max-w-[814px] grid-cols-1 gap-6 px-6 pt-6 md:mx-auto md:grid-cols-2">
+      {images.length > 0 ? (
         <ReviewImage images={images} />
+      ) : (
+        <div className="flex w-full justify-center">
+          <Spinner variant="circle" size={40} />
+        </div>
+      )}
+      {config ? (
         <ReviewForm config={config} data={data} />
-      </div>
-    </section>
+      ) : (
+        <div className="flex w-full justify-center">
+          <Spinner variant="circle" size={40} />
+        </div>
+      )}
+    </div>
   );
 }

@@ -10,14 +10,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 
-type SubmitBackModelProps = {
+type HomeBlockerModelProps = {
   blocker: Blocker;
 };
 
-export default function SubmitBackModel({ blocker }: SubmitBackModelProps) {
+export default function HomeBlockerModel({ blocker }: HomeBlockerModelProps) {
   return (
     <AlertDialog open>
       <AlertDialogContent>
@@ -26,21 +25,21 @@ export default function SubmitBackModel({ blocker }: SubmitBackModelProps) {
             className="flex size-9 shrink-0 items-center justify-center rounded-full border"
             aria-hidden="true"
           >
-            <CircleAlertIcon
-              className="stroke-destructive opacity-80"
-              size={16}
-            />
+            <CircleAlertIcon className="opacity-80" size={16} />
           </div>
           <AlertDialogHeader>
-            <AlertDialogTitle>Access Denied!</AlertDialogTitle>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              You are not permitted to return to this page.
+              Are you sure you want to leave this page? Any unsaved data will be
+              lost
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={blocker.reset}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={blocker.reset}>Okay</AlertDialogAction>
+          <AlertDialogAction onClick={blocker.proceed}>
+            Continue to upload
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

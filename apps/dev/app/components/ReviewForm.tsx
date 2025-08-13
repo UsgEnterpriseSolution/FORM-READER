@@ -12,32 +12,22 @@ import {
   SelectValue,
 } from "./ui/select";
 import { PhoneInput } from "./PhoneInput";
-import { Spinner } from "./ui/Spinner";
 
 type ReviewFormProps = {
   config: SelectConfig | undefined;
   data: any;
 };
 
-export default function ReviewFormBeta({ config, data }: ReviewFormProps) {
+export default function ReviewForm({ config, data }: ReviewFormProps) {
   return (
-    <section className="space-y-2">
-      <h3 className="text-lg">Form data</h3>
-      <p className="text-muted-foreground">Data written on image uploaded</p>
-      <Form
-        id="review-form"
-        method="POST"
-        className="h-fit space-y-3 border-2 border-dashed p-4"
-      >
-        {config ? (
+    <section className="space-y-2 overflow-y-scroll pb-4">
+      <h3 className="text-lg">{config?.title}</h3>
+      <p className="text-muted-foreground">{config?.description}</p>
+      <Form id="review-form" method="POST" className="h-fit space-y-3">
+        {config &&
           config.fields.map((field, index) => (
             <GenericField key={index} field={field} data={data} />
-          ))
-        ) : (
-          <div className="flex w-full justify-center">
-            <Spinner variant="circle" size={40} />
-          </div>
-        )}
+          ))}
       </Form>
     </section>
   );
