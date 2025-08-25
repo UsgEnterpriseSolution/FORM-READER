@@ -11,6 +11,7 @@ export default [
     route("review/:key?", "routes/review.tsx"),
     route("submit", "routes/submit.tsx"),
     route("config", "routes/config.tsx"),
+    route("beta/config", "routes/config-beta.tsx"),
   ]),
   // API routes
   route("api/configs", "routes/api/config-all.ts"),

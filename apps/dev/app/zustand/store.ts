@@ -72,6 +72,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
 }));
 
 export const useSettings = () => useAppStore((store) => store.state.settings);
-export const useImages = () => useAppStore((store) => store.state.images);
-export const useFieldData = () => useAppStore((store) => store.state.fieldData);
+// export const useImages = () => useAppStore((store) => store.state.images);
+// export const useFieldData = () => useAppStore((store) => store.state.fieldData);
 export const useActions = () => useAppStore((store) => store.actions);

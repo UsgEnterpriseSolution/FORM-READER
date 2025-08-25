@@ -50,7 +50,7 @@ export default function Navbar() {
           </NavLink>
         )}
 
-        {path !== href("/config") && (
+        {path !== href("/config") ? (
           <div className="flex gap-6">
             <Stepper index={1} isActive={path === href("/")}>
               Upload
@@ -62,6 +62,8 @@ export default function Navbar() {
               Submit
             </Stepper>
           </div>
+        ) : (
+          <p className="text-sm font-medium">Configurations</p>
         )}
 
         {path?.includes("/review/") ? (

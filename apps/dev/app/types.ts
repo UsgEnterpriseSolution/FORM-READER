@@ -1,10 +1,6 @@
-import { z } from "zod";
-import type { fieldDataSchema } from "./zod";
 import type { SelectConfig } from "./db/schema/tbConfig";
 
 // Generic types
-
-export type FieldData = z.infer<typeof fieldDataSchema>; // # Delete
 
 export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";
 
@@ -36,53 +32,76 @@ export type UploadLoaderRes = {
   }>;
 };
 
+export type ConfigLoaderRes = Array<{
+  configId: string;
+  title: string;
+  description: string;
+  lastUpdated: string;
+}>;
+
 export type ReviewLoaderRes = {
   images: string[];
   config: SelectConfig | null;
   fieldData: object;
 };
 
-// Config Types used currently in DB/UI flows
+// Config Types
+
+export type ConfigFieldType =
+  | "TEXT"
+  | "NUMBER"
+  | "DATE"
+  | "EMAIL"
+  | "PHONE"
+  | "TEXTAREA"
+  | "SELECT"
+  | "CHECKBOX"
+  | "RADIO"
+  | "TABLE"
+  | "SWITCH";
+
+export type ConfigFieldObj = {
+  id: string;
+  type: ConfigFieldType;
+};
 
 type BaseField = {
   name: string;
   label: string;
   placeholder: string;
+};
+
+export type TextField = BaseField & {
+  type: "TEXT" | "NUMBER" | "DATE" | "EMAIL" | "PHONE" | "TEXTAREA";
   defaultValue: string;
-  validation: FieldValidation;
-};
-
-type FieldValidation = {
-  isRequired: boolean;
   regExp: string;
+  isRequired: boolean;
 };
 
-type TextField = {
-  type: "text" | "email" | "number" | "phone";
-} & BaseField;
-
-type TextareaField = {
-  type: "textarea";
-} & BaseField;
-
-type Options = {
-  value: string;
-  label: string;
+export type OptionField = BaseField & {
+  type: "SELECT" | "CHECKBOX" | "RADIO";
+  options: Array<{
+    label: string;
+    value: string;
+  }>;
+  defaultValue: string;
+  isRequired: boolean;
 };
 
-type SelectField = {
-  type: "select";
-  options: Options[];
-} & BaseField;
+export type ColumnField = Omit<BaseField, "placeholder"> & {
+  type: "TABLE";
+  columns: Array<{
+    label: string;
+    key: string;
+  }>;
+};
 
-type CheckboxField = {
-  type: "checkbox";
-  name: string;
-  label: string;
+export type ToggleField = BaseField & {
+  type: "SWITCH";
   defaultValue: boolean;
 };
 
-export type Field = TextField | TextareaField | SelectField | CheckboxField;
+export type Field = TextField | OptionField | ColumnField | ToggleField;
 
 // New Configuration Data Model (per project rules Step 2)
 export interface FormField {

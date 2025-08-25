@@ -73,16 +73,16 @@ export default function Review({ loaderData }: Route.ComponentProps) {
   }, [loaderData.status]);
 
   return (
-    <div className="max-height grid max-w-[814px] grid-cols-1 gap-6 px-6 pt-6 md:mx-auto md:grid-cols-2">
+    <div className="max-height grid max-w-[816px] grid-cols-1 gap-6 px-6 pt-6 md:mx-auto md:grid-cols-[296px_1fr]">
       {images.length > 0 ? (
-        <ReviewImage images={images} />
+        <ReviewImage images={images} className="" />
       ) : (
         <div className="flex w-full justify-center">
           <Spinner variant="circle" size={40} />
         </div>
       )}
       {config ? (
-        <ReviewForm config={config} data={data} />
+        <ReviewForm config={config} data={data} className="space-y-2 pb-4" />
       ) : (
         <div className="flex w-full justify-center">
           <Spinner variant="circle" size={40} />
