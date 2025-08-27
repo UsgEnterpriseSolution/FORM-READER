@@ -36,24 +36,35 @@ type ConfigEditorProps = {
 export default function ConfigEditor(props: ConfigEditorProps) {
   const [configFields, setConfigFields] = useState<ConfigFieldObj[]>([]);
 
-  const handleAddField = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleAddField = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    const formData = new FormData(e.target as HTMLFormElement);
-    const newFieldType = formData.get(
-      "new-field-type",
-    ) as ConfigFieldType | null;
+      const formData = new FormData(e.target as HTMLFormElement);
+      const newFieldType = formData.get(
+        "new-field-type",
+      ) as ConfigFieldType | null;
 
-    if (newFieldType) {
-      setConfigFields((state) => [
-        ...state,
-        { id: nanoid(), type: newFieldType },
-      ]);
-    }
-  };
+      if (newFieldType) {
+        setConfigFields((state) => [
+          ...state,
+          { id: nanoid(), type: newFieldType },
+        ]);
+      }
+    },
+    [setConfigFields],
+  );
 
   const handleDeleteField = useCallback((id: string) => {
     setConfigFields((fields) => fields.filter((field) => field.id !== id));
+  }, []);
+
+  const updateField = useCallback((id: string, newType: ConfigFieldType) => {
+    setConfigFields((fields) =>
+      fields.map((field) =>
+        field.id === id ? { ...field, type: newType } : field,
+      ),
+    );
   }, []);
 
   return (
@@ -145,9 +156,11 @@ export default function ConfigEditor(props: ConfigEditorProps) {
           </form>
 
           <div className="flex w-full gap-2">
-            <Button type="submit" form="configEditorForm" className="w-full">
-              {props.mode === "CREATE" ? "Submit form" : "Save changes"}
-            </Button>
+            <SheetClose asChild>
+              <Button type="submit" form="configEditorForm" className="w-full">
+                {props.mode === "CREATE" ? "Submit form" : "Save changes"}
+              </Button>
+            </SheetClose>
             <SheetClose asChild>
               <Button variant="outline" className="w-full">
                 Close

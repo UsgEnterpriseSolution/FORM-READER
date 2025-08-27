@@ -1,22 +1,6 @@
 import { z } from "zod";
 
-export const fieldSchema = z.object({});
-
-export const config = z.object({
-  id: z.number(),
-  configId: z.string(),
-  title: z.string(),
-  description: z.string(),
-  fields: z.array(fieldSchema),
-});
-
-export const reviewPayloadSchema = z.object({
-  images: z.array(z.string()),
-  config: config,
-  schema: z.object({}),
-});
-
-export const textFieldSchema = z.enum([
+export const textFieldTypeSchema = z.enum([
   "TEXT",
   "NUMBER",
   "DATE",
@@ -24,9 +8,76 @@ export const textFieldSchema = z.enum([
   "PHONE",
   "TEXTAREA",
 ]);
+export const optionFieldTypeSchema = z.enum(["SELECT", "CHECKBOX", "RADIO"]);
+export const columnFieldTypeSchema = z.literal("TABLE");
+export const toggleFieldTypeSchema = z.literal("SWITCH");
 
-export const optionFieldSchema = z.enum(["SELECT", "CHECKBOX", "RADIO"]);
+export const baseFieldSchema = z.object({
+  name: z.string(),
+  label: z.string(),
+  placeholder: z.string(),
+});
 
-export const columnFieldSchema = z.enum(["TABLE"]);
+export const textFieldSchema = baseFieldSchema.extend({
+  type: textFieldTypeSchema,
+  defaultValue: z.string(),
+  regExp: z.string(),
+  isRequired: z.boolean(),
+});
 
-export const toggleFieldSchema = z.enum(["SWITCH"]);
+export const optionFieldSchema = baseFieldSchema.extend({
+  type: optionFieldTypeSchema,
+  options: z.array(
+    z.object({
+      label: z.string(),
+      value: z.string(),
+    }),
+  ),
+  defaultValue: z.string(),
+  isRequired: z.boolean(),
+});
+
+export const columnFieldSchema = baseFieldSchema
+  .omit({ placeholder: true })
+  .extend({
+    type: columnFieldTypeSchema,
+    columns: z.array(
+      z.object({
+        label: z.string(),
+        key: z.string(),
+      }),
+    ),
+  });
+
+export const toggleFieldSchema = baseFieldSchema.extend({
+  type: toggleFieldTypeSchema,
+  defaultValue: z.boolean(),
+});
+
+export const fieldSchema = z.union([
+  textFieldSchema,
+  optionFieldSchema,
+  columnFieldSchema,
+  toggleFieldSchema,
+]);
+
+export const configSchema = z.object({
+  id: z.number(),
+  configId: z.string(),
+  title: z.string(),
+  description: z.string(),
+  fields: z.array(fieldSchema),
+  schema: z.record(z.string(), z.any()),
+});
+
+export const rawConfigSchema = configSchema.omit({
+  id: true,
+  configId: true,
+  schema: true,
+});
+
+export const reviewPayloadSchema = z.object({
+  images: z.array(z.string()),
+  config: configSchema,
+  schema: z.record(z.string(), z.any()),
+});

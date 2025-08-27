@@ -1,4 +1,19 @@
+import type z from "zod";
 import type { SelectConfig } from "./db/schema/tbConfig";
+import type {
+  baseFieldSchema,
+  columnFieldSchema,
+  columnFieldTypeSchema,
+  configSchema,
+  fieldSchema,
+  optionFieldSchema,
+  optionFieldTypeSchema,
+  rawConfigSchema,
+  textFieldSchema,
+  textFieldTypeSchema,
+  toggleFieldSchema,
+  toggleFieldTypeSchema,
+} from "./zod";
 
 // Generic types
 
@@ -46,62 +61,26 @@ export type ReviewLoaderRes = {
 };
 
 // Config Types
-
 export type ConfigFieldType =
-  | "TEXT"
-  | "NUMBER"
-  | "DATE"
-  | "EMAIL"
-  | "PHONE"
-  | "TEXTAREA"
-  | "SELECT"
-  | "CHECKBOX"
-  | "RADIO"
-  | "TABLE"
-  | "SWITCH";
+  | z.infer<typeof textFieldTypeSchema>
+  | z.infer<typeof optionFieldTypeSchema>
+  | z.infer<typeof columnFieldTypeSchema>
+  | z.infer<typeof toggleFieldTypeSchema>;
 
 export type ConfigFieldObj = {
   id: string;
   type: ConfigFieldType;
 };
 
-type BaseField = {
-  name: string;
-  label: string;
-  placeholder: string;
-};
+export type BaseField = z.infer<typeof baseFieldSchema>;
+export type TextField = z.infer<typeof textFieldSchema>;
+export type OptionField = z.infer<typeof optionFieldSchema>;
+export type ColumnField = z.infer<typeof columnFieldSchema>;
+export type ToggleField = z.infer<typeof toggleFieldSchema>;
 
-export type TextField = BaseField & {
-  type: "TEXT" | "NUMBER" | "DATE" | "EMAIL" | "PHONE" | "TEXTAREA";
-  defaultValue: string;
-  regExp: string;
-  isRequired: boolean;
-};
-
-export type OptionField = BaseField & {
-  type: "SELECT" | "CHECKBOX" | "RADIO";
-  options: Array<{
-    label: string;
-    value: string;
-  }>;
-  defaultValue: string;
-  isRequired: boolean;
-};
-
-export type ColumnField = Omit<BaseField, "placeholder"> & {
-  type: "TABLE";
-  columns: Array<{
-    label: string;
-    key: string;
-  }>;
-};
-
-export type ToggleField = BaseField & {
-  type: "SWITCH";
-  defaultValue: boolean;
-};
-
-export type Field = TextField | OptionField | ColumnField | ToggleField;
+export type FieldObj = z.infer<typeof fieldSchema>;
+export type RawConfig = z.infer<typeof rawConfigSchema>;
+export type ConfigObj = z.infer<typeof configSchema>;
 
 // New Configuration Data Model (per project rules Step 2)
 export interface FormField {

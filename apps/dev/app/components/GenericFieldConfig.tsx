@@ -7,10 +7,10 @@ import GenericToggleField from "./GenericToggleField";
 
 import type { ConfigFieldType } from "~/types";
 import {
-  columnFieldSchema,
-  optionFieldSchema,
-  textFieldSchema,
-  toggleFieldSchema,
+  columnFieldTypeSchema,
+  optionFieldTypeSchema,
+  textFieldTypeSchema,
+  toggleFieldTypeSchema,
 } from "~/zod";
 
 type GenericFieldConfigProps = {
@@ -20,11 +20,10 @@ type GenericFieldConfigProps = {
 };
 
 function Component(props: GenericFieldConfigProps) {
-  // Define type groups and render the matching field component.
-  const textFieldZodObj = textFieldSchema.safeParse(props.type);
-  const optionFieldZodObj = optionFieldSchema.safeParse(props.type);
-  const columnFieldZodObj = columnFieldSchema.safeParse(props.type);
-  const toggleFieldZodObj = toggleFieldSchema.safeParse(props.type);
+  const textFieldZodObj = textFieldTypeSchema.safeParse(props.type);
+  const optionFieldZodObj = optionFieldTypeSchema.safeParse(props.type);
+  const columnFieldZodObj = columnFieldTypeSchema.safeParse(props.type);
+  const toggleFieldZodObj = toggleFieldTypeSchema.safeParse(props.type);
 
   if (textFieldZodObj.success) {
     return <GenericTextField {...props} type={textFieldZodObj.data} />;
