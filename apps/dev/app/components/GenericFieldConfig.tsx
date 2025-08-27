@@ -17,6 +17,7 @@ type GenericFieldConfigProps = {
   id: string;
   type: ConfigFieldType;
   handleDelete: (id: string) => void;
+  handleFieldChange: (id: string, newType: ConfigFieldType) => void;
 };
 
 function Component(props: GenericFieldConfigProps) {

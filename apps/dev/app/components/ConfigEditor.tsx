@@ -120,6 +120,7 @@ export default function ConfigEditor(props: ConfigEditorProps) {
                   key={field.id}
                   {...field}
                   handleDelete={handleDeleteField}
+                  handleFieldChange={updateField}
                 />
               ))
             ) : (
