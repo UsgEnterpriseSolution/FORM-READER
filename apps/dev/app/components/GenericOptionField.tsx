@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Trash2, Plus } from "lucide-react";
 
 import { Input } from "./ui/input";
@@ -14,74 +13,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useActions } from "~/zustand/store";
 
 type Props = {
-  id: string;
-  type: OptionField["type"];
-  data?: string;
-  handleDelete: (id: string) => void;
+  fieldId: string;
+  data: OptionField;
 };
 
-export default function GenericOptionField(props: Props) {
-  const [data, setData] = useState<OptionField>(() =>
-    props.data
-      ? (JSON.parse(props.data) as OptionField)
-      : {
-          type: props.type,
-          label: "New Field",
-          name: "",
-          placeholder: "",
-          defaultValue: "",
-          options: [],
-          isRequired: false,
-        },
-  );
+export default function GenericOptionField({ fieldId, data }: Props) {
+  const { removeConfigField, updateConfigField } = useActions();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | any,
-    field: keyof OptionField,
-  ) => {
-    if (field === "isRequired") {
-      setData((prev) => ({
-        ...prev,
-        isRequired: !prev.isRequired,
-      }));
-      return;
-    }
-
-    const { value } = e.target as HTMLInputElement;
-    setData((prev) => ({ ...prev, [field]: value }) as OptionField);
+  const handleChange = (key: keyof OptionField, value: any) => {
+    updateConfigField(fieldId, { ...data, [key]: value });
   };
 
-  const addOption = () => {
-    setData(
-      (prev) =>
-        ({
-          ...prev,
-          options: [...(prev.options ?? []), { label: "", value: "" }],
-        }) as OptionField,
-    );
-  };
+  const addOption = () =>
+    updateConfigField(fieldId, {
+      ...data,
+      options: [...(data.options ?? []), { label: "", value: "" }],
+    });
 
   const updateOption = (
     idx: number,
     key: keyof OptionField["options"][number],
     val: string,
-  ) =>
-    setData((prev) => {
-      const opts = [...(prev.options ?? [])];
-      opts[idx] = { ...opts[idx], [key]: val } as any;
-      return { ...prev, options: opts } as OptionField;
-    });
+  ) => {
+    const opts = [...(data.options ?? [])];
+    opts[idx] = { ...opts[idx], [key]: val } as any;
+    updateConfigField(fieldId, { ...data, options: opts });
+  };
 
   const removeOption = (index: number) => {
-    setData(
-      (prev) =>
-        ({
-          ...prev,
-          options: prev.options.filter((_, i) => i !== index),
-        }) as OptionField,
-    );
+    updateConfigField(fieldId, {
+      ...data,
+      options: (data.options ?? []).filter((_, i) => i !== index),
+    });
   };
 
   return (
@@ -90,7 +56,7 @@ export default function GenericOptionField(props: Props) {
         <div className="flex items-center gap-2">
           <p className="text-sm">{data.label}</p>
           <div className="bg-muted w-fit rounded-sm px-2 py-1 text-xs">
-            {props.type.toLocaleUpperCase()}
+            {data.type.toLocaleUpperCase()}
           </div>
         </div>
 
@@ -98,7 +64,7 @@ export default function GenericOptionField(props: Props) {
           type="button"
           variant={"outline"}
           size={"icon"}
-          onClick={() => props.handleDelete(props.id)}
+          onClick={() => removeConfigField(fieldId)}
         >
           <Trash2 className="stroke-red-500" />
         </Button>
@@ -114,7 +80,7 @@ export default function GenericOptionField(props: Props) {
           type="text"
           placeholder="eg: Account creation date"
           value={data.label}
-          onChange={(e) => handleChange(e, "label")}
+          onChange={(e) => handleChange("label", e.target.value)}
           required
         />
       </Label>
@@ -127,7 +93,7 @@ export default function GenericOptionField(props: Props) {
           type="text"
           placeholder="eg: accountCreationDate"
           value={data.name}
-          onChange={(e) => handleChange(e, "name")}
+          onChange={(e) => handleChange("name", e.target.value)}
           required
         />
       </Label>
@@ -140,12 +106,12 @@ export default function GenericOptionField(props: Props) {
           type="text"
           placeholder="eg: dd/mm/yyyy"
           value={data.placeholder}
-          onChange={(e) => handleChange(e, "placeholder")}
+          onChange={(e) => handleChange("placeholder", e.target.value)}
         />
       </Label>
 
       <FieldOptions
-        options={data.options}
+        options={data.options ?? []}
         onAdd={addOption}
         onUpdate={updateOption}
         onRemove={removeOption}
@@ -174,9 +140,7 @@ export default function GenericOptionField(props: Props) {
           <Select
             name="defaultValue"
             value={data.defaultValue}
-            onValueChange={(value) =>
-              handleChange({ target: { value } } as any, "defaultValue")
-            }
+            onValueChange={(value) => handleChange("defaultValue", value)}
           >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select default option" />
@@ -196,7 +160,7 @@ export default function GenericOptionField(props: Props) {
         <Switch
           name="required"
           checked={data.isRequired}
-          onCheckedChange={() => handleChange({} as any, "isRequired")}
+          onCheckedChange={() => handleChange("isRequired", !data.isRequired)}
         />
         <p>Mark field as required.</p>
       </Label>

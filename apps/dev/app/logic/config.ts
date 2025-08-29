@@ -78,7 +78,8 @@ class Config {
         schema: await this.genSchema(rawConfig.fields),
       };
 
-      db.insert(tbConfig).values(newConfig);
+      const result = await db.insert(tbConfig).values(newConfig).returning();
+      return result[0] ?? null;
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);
@@ -98,7 +99,25 @@ class Config {
         .set(update)
         .where(eq(tbConfig.configId, configId))
         .returning();
+
       return res[0] ?? null;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else console.error(error);
+      return null;
+    }
+  }
+
+  public static async updateBeta(configId: string, rawConfig: RawConfig) {
+    try {
+      const result = await db
+        .update(tbConfig)
+        .set(rawConfig)
+        .where(eq(tbConfig.configId, configId))
+        .returning();
+
+      return result[0] ?? null;
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);

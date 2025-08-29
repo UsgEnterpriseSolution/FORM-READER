@@ -5,63 +5,41 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 
 import type { ColumnField } from "~/types";
-import { useState } from "react";
+import { useActions } from "~/zustand/store";
 
 type Props = {
-  id: string;
-  type: ColumnField["type"];
-  data?: string;
-  handleDelete: (id: string) => void;
+  fieldId: string;
+  data: ColumnField;
 };
 
-export default function GenericColumnField(props: Props) {
-  const [data, setData] = useState<ColumnField>(() =>
-    props.data
-      ? (JSON.parse(props.data) as ColumnField)
-      : {
-          type: props.type,
-          label: "New Field",
-          name: "",
-          columns: [],
-        },
-  );
+export default function GenericColumnField({ fieldId, data }: Props) {
+  const { removeConfigField, updateConfigField } = useActions();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | any,
-    field: keyof ColumnField,
-  ) => {
-    const { value } = e.target as HTMLInputElement;
-    setData((prev) => ({ ...prev, [field]: value }) as ColumnField);
+  const handleChange = (key: keyof ColumnField, value: any) => {
+    updateConfigField(fieldId, { ...data, [key]: value });
   };
 
   const addColumn = () =>
-    setData(
-      (prev) =>
-        ({
-          ...prev,
-          columns: [...(prev.columns ?? []), { label: "", key: "" }],
-        }) as ColumnField,
-    );
+    updateConfigField(fieldId, {
+      ...data,
+      columns: [...(data.columns ?? []), { label: "", key: "" }],
+    });
 
   const updateColumn = (
     idx: number,
     key: keyof ColumnField["columns"][number],
     val: string,
-  ) =>
-    setData((prev) => {
-      const cols = [...(prev.columns ?? [])];
-      cols[idx] = { ...cols[idx], [key]: val } as any;
-      return { ...prev, columns: cols } as ColumnField;
-    });
+  ) => {
+    const cols = [...(data.columns ?? [])];
+    cols[idx] = { ...cols[idx], [key]: val } as any;
+    updateConfigField(fieldId, { ...data, columns: cols });
+  };
 
   const removeColumn = (idx: number) =>
-    setData(
-      (prev) =>
-        ({
-          ...prev,
-          columns: prev.columns.filter((_, i) => i !== idx),
-        }) as ColumnField,
-    );
+    updateConfigField(fieldId, {
+      ...data,
+      columns: (data.columns ?? []).filter((_, i) => i !== idx),
+    });
 
   return (
     <div className="space-y-4 rounded-lg border p-3">
@@ -69,7 +47,7 @@ export default function GenericColumnField(props: Props) {
         <div className="flex items-center gap-2">
           <p className="text-sm">{data.label}</p>
           <div className="bg-muted w-fit rounded-sm px-2 py-1 text-xs">
-            {props.type.toLocaleUpperCase()}
+            {data.type.toLocaleUpperCase()}
           </div>
         </div>
 
@@ -77,7 +55,7 @@ export default function GenericColumnField(props: Props) {
           type="button"
           variant={"outline"}
           size={"icon"}
-          onClick={() => props.handleDelete(props.id)}
+          onClick={() => removeConfigField(fieldId)}
         >
           <Trash2 className="stroke-red-500" />
         </Button>
@@ -93,7 +71,7 @@ export default function GenericColumnField(props: Props) {
           type="text"
           placeholder="eg: Account creation date"
           value={data.label}
-          onChange={(e) => handleChange(e, "label")}
+          onChange={(e) => handleChange("label", e.target.value)}
           required
         />
       </Label>
@@ -106,13 +84,13 @@ export default function GenericColumnField(props: Props) {
           type="text"
           placeholder="eg: accountCreationDate"
           value={data.name}
-          onChange={(e) => handleChange(e, "name")}
+          onChange={(e) => handleChange("name", e.target.value)}
           required
         />
       </Label>
 
       <FieldColumns
-        columns={data.columns}
+        columns={data.columns ?? []}
         onAdd={addColumn}
         onUpdate={updateColumn}
         onRemove={removeColumn}

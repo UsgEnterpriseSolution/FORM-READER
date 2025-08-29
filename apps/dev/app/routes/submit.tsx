@@ -3,17 +3,16 @@ import { BadgeCheck, FilePlus } from "lucide-react";
 
 import type { Route } from "./+types/submit";
 import { Button } from "~/components/ui/button";
-import { useAppStore } from "~/zustand/store";
 import ReviewBlockerModel from "~/components/ReviewBlockerModal";
 
 export function clientLoader() {
-  useAppStore.setState(() => ({
-    state: {
-      images: [],
-      fieldData: undefined,
-      settings: { engine: null, configId: null },
-    },
-  }));
+  // useAppStore.setState(() => ({
+  //   state: {
+  //     images: [],
+  //     fieldData: undefined,
+  //     settings: { engine: null, configId: null },
+  //   },
+  // }));
 }
 
 export default function Submit({}: Route.ComponentProps) {

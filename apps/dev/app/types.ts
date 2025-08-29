@@ -15,11 +15,11 @@ import type {
   toggleFieldTypeSchema,
 } from "./zod";
 
-// Generic types
+// --- Generic types ---
 
 export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";
 
-// Response types
+// --- Response types ---
 
 export type AppResponse<T> =
   | {
@@ -60,7 +60,8 @@ export type ReviewLoaderRes = {
   fieldData: object;
 };
 
-// Config Types
+// --- Config Types ---
+
 export type ConfigFieldType =
   | z.infer<typeof textFieldTypeSchema>
   | z.infer<typeof optionFieldTypeSchema>

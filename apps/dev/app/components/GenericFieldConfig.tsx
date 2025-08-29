@@ -5,41 +5,46 @@ import GenericOptionField from "./GenericOptionField";
 import GenericColumnField from "./GenericColumnField";
 import GenericToggleField from "./GenericToggleField";
 
-import type { ConfigFieldType } from "~/types";
 import {
-  columnFieldTypeSchema,
-  optionFieldTypeSchema,
-  textFieldTypeSchema,
-  toggleFieldTypeSchema,
+  columnFieldSchema,
+  optionFieldSchema,
+  textFieldSchema,
+  toggleFieldSchema,
 } from "~/zod";
+import { useConfigField } from "~/zustand/store";
 
 type GenericFieldConfigProps = {
-  id: string;
-  type: ConfigFieldType;
-  handleDelete: (id: string) => void;
-  handleFieldChange: (id: string, newType: ConfigFieldType) => void;
+  fieldId: string;
 };
 
-function Component(props: GenericFieldConfigProps) {
-  const textFieldZodObj = textFieldTypeSchema.safeParse(props.type);
-  const optionFieldZodObj = optionFieldTypeSchema.safeParse(props.type);
-  const columnFieldZodObj = columnFieldTypeSchema.safeParse(props.type);
-  const toggleFieldZodObj = toggleFieldTypeSchema.safeParse(props.type);
+function Component({ fieldId }: GenericFieldConfigProps) {
+  const field = useConfigField(fieldId);
+
+  const textFieldZodObj = textFieldSchema.safeParse(field?.data);
+  const optionFieldZodObj = optionFieldSchema.safeParse(field?.data);
+  const columnFieldZodObj = columnFieldSchema.safeParse(field?.data);
+  const toggleFieldZodObj = toggleFieldSchema.safeParse(field?.data);
 
   if (textFieldZodObj.success) {
-    return <GenericTextField {...props} type={textFieldZodObj.data} />;
+    return <GenericTextField fieldId={fieldId} data={textFieldZodObj.data} />;
   }
 
   if (optionFieldZodObj.success) {
-    return <GenericOptionField {...props} type={optionFieldZodObj.data} />;
+    return (
+      <GenericOptionField fieldId={fieldId} data={optionFieldZodObj.data} />
+    );
   }
 
   if (columnFieldZodObj.success) {
-    return <GenericColumnField {...props} type={columnFieldZodObj.data} />;
+    return (
+      <GenericColumnField fieldId={fieldId} data={columnFieldZodObj.data} />
+    );
   }
 
   if (toggleFieldZodObj.success) {
-    return <GenericToggleField {...props} type={toggleFieldZodObj.data} />;
+    return (
+      <GenericToggleField fieldId={fieldId} data={toggleFieldZodObj.data} />
+    );
   }
 
   return <p>Unknown field type</p>;

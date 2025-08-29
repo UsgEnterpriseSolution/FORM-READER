@@ -1,5 +1,3 @@
-import React, { useState } from "react";
-
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Trash2 } from "lucide-react";
@@ -13,37 +11,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useActions } from "~/zustand/store";
 
 type Props = {
-  id: string;
-  type: ToggleField["type"];
-  data?: string;
-  handleDelete: (id: string) => void;
+  fieldId: string;
+  data: ToggleField;
 };
 
-export default function GenericToggleField(props: Props) {
-  const [data, setData] = useState<ToggleField>(() =>
-    props.data
-      ? (JSON.parse(props.data) as ToggleField)
-      : {
-          type: props.type,
-          label: "New Field",
-          name: "",
-          placeholder: "",
-          defaultValue: false,
-        },
-  );
+export default function GenericToggleField({ fieldId, data }: Props) {
+  const { removeConfigField, updateConfigField } = useActions();
 
-  const [required, setRequired] = useState<boolean>(() =>
-    props.data ? ((JSON.parse(props.data) as any).isRequired ?? false) : false,
-  );
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement> | any,
-    field: keyof ToggleField,
-  ) => {
-    const { value } = e.target as HTMLInputElement;
-    setData((prev) => ({ ...prev, [field]: value }) as ToggleField);
+  const handleChange = (key: keyof ToggleField, value: any) => {
+    updateConfigField(fieldId, { ...data, [key]: value });
   };
 
   return (
@@ -52,7 +31,7 @@ export default function GenericToggleField(props: Props) {
         <div className="flex items-center gap-2">
           <p className="text-sm">{data.label}</p>
           <div className="bg-muted w-fit rounded-sm px-2 py-1 text-xs">
-            {props.type.toLocaleUpperCase()}
+            {data.type.toLocaleUpperCase()}
           </div>
         </div>
 
@@ -60,17 +39,13 @@ export default function GenericToggleField(props: Props) {
           type="button"
           variant={"outline"}
           size={"icon"}
-          onClick={() => props.handleDelete(props.id)}
+          onClick={() => removeConfigField(fieldId)}
         >
           <Trash2 className="stroke-red-500" />
         </Button>
       </div>
 
-      <input
-        type="hidden"
-        name="field"
-        value={JSON.stringify({ ...data, isRequired: required } as any)}
-      />
+      <input type="hidden" name="field" value={JSON.stringify(data)} />
 
       <Label className="block space-y-2">
         <p>
@@ -80,7 +55,7 @@ export default function GenericToggleField(props: Props) {
           type="text"
           placeholder="eg: Account creation date"
           value={data.label}
-          onChange={(e) => handleChange(e, "label")}
+          onChange={(e) => handleChange("label", e.target.value)}
           required
         />
       </Label>
@@ -93,7 +68,7 @@ export default function GenericToggleField(props: Props) {
           type="text"
           placeholder="eg: accountCreationDate"
           value={data.name}
-          onChange={(e) => handleChange(e, "name")}
+          onChange={(e) => handleChange("name", e.target.value)}
           required
         />
       </Label>
@@ -106,9 +81,7 @@ export default function GenericToggleField(props: Props) {
         <Select
           name="new-field-type"
           value={data.defaultValue ? "true" : "false"}
-          onValueChange={(v) =>
-            setData((prev) => ({ ...prev, defaultValue: v === "true" }))
-          }
+          onValueChange={(v) => handleChange("defaultValue", v === "true")}
           required
         >
           <SelectTrigger className="w-full">

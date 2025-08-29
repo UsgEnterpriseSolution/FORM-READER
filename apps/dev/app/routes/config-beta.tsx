@@ -1,5 +1,5 @@
 import { useNavigation } from "react-router";
-import { CirclePlus, Eye, Loader2, Pencil, Trash2 } from "lucide-react";
+import { CirclePlus, Eye, Pencil, Trash2 } from "lucide-react";
 
 import {
   Table,
@@ -15,43 +15,71 @@ import ConfigEditor from "~/components/ConfigEditor";
 import Config from "~/logic/config";
 import type { Route } from "./+types/config-beta";
 import type { AppResponse, ConfigLoaderRes } from "~/types";
+import { rawConfigSchema } from "~/zod";
 
 export async function action({ request }: Route.ActionArgs) {
   try {
-    await new Promise((res) => setTimeout(res, 3000));
+    // await new Promise((res) => setTimeout(res, 3000));
 
-    // switch (request.method.toUpperCase()) {
-    //   case "POST":
-    //     const formData = await request.formData();
+    switch (request.method.toUpperCase()) {
+      case "POST":
+        const formData = await request.formData();
 
-    //     const rawConfigValidation = rawConfigSchema.safeParse({
-    //       title: formData.get("title") as string,
-    //       description: formData.get("description") as string,
-    //       fields: (formData.getAll("field") as string[]).map((field) =>
-    //         JSON.parse(field),
-    //       ),
-    //     });
+        const rawConfigValidation = rawConfigSchema.safeParse({
+          title: formData.get("title") as string,
+          description: formData.get("description") as string,
+          fields: (formData.getAll("field") as string[]).map((field) =>
+            JSON.parse(field),
+          ),
+        });
 
-    //     if (!rawConfigValidation.success) {
-    //       return {
-    //         status: "fail",
-    //         message: "Invalid form data.",
-    //       };
-    //     } else {
-    //       const schema = await Config.genSchema(
-    //         rawConfigValidation.data.fields,
-    //       );
-    //     }
+        if (!rawConfigValidation.success) {
+          return {
+            status: "fail",
+            message: "Invalid form data.",
+          };
+        } else {
+          await Config.createBeta(rawConfigValidation.data);
 
-    //   case "PUT":
-    //   case "DELETE":
-    //   default:
-    //     return {
-    //       code: 500,
-    //       status: "error",
-    //       message: "Invaild HTTP verb.",
-    //     };
-    // }
+          return {
+            status: "success",
+            message: "Config created successfully.",
+          };
+        }
+
+      case "PUT":
+        const updateFormData = await request.formData();
+
+        const rawUpdateConfigValidation = rawConfigSchema.safeParse({
+          title: updateFormData.get("title") as string,
+          description: updateFormData.get("description") as string,
+          fields: (updateFormData.getAll("field") as string[]).map((field) =>
+            JSON.parse(field),
+          ),
+        });
+
+        if (!rawUpdateConfigValidation.success) {
+          return {
+            status: "fail",
+            message: "Invalid form data.",
+          };
+        } else {
+          // await Config.updateBeta(rawUpdateConfigValidation.data);
+
+          return {
+            status: "success",
+            message: "Config updated successfully.",
+          };
+        }
+
+      case "DELETE":
+      default:
+        return {
+          code: 500,
+          status: "error",
+          message: "Invaild HTTP verb.",
+        };
+    }
   } catch (error) {
     return {
       code: 500,
@@ -88,8 +116,6 @@ export async function loader(): Promise<AppResponse<ConfigLoaderRes>> {
 }
 
 export default function ConfigBeta({ loaderData }: Route.ComponentProps) {
-  const { state } = useNavigation();
-
   return (
     <section className="space-y-4 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -100,18 +126,9 @@ export default function ConfigBeta({ loaderData }: Route.ComponentProps) {
           title="Add Form"
           description="Complete the fields below to add the new form to the app."
         >
-          <Button disabled={state === "submitting"}>
-            {state === "submitting" ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <p>submitting...</p>
-              </>
-            ) : (
-              <>
-                <CirclePlus />
-                <p>Add Form</p>
-              </>
-            )}
+          <Button>
+            <CirclePlus />
+            <p>Add Form</p>
           </Button>
         </ConfigEditor>
       </div>

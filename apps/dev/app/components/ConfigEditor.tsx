@@ -1,5 +1,4 @@
-import React, { useState, useCallback } from "react";
-import { nanoid } from "nanoid";
+import React, { useCallback, useEffect, useRef } from "react";
 import {
   Sheet,
   SheetClose,
@@ -11,7 +10,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Button } from "./ui/button";
-import { Form } from "react-router";
+import { Form, useNavigation } from "react-router";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -23,7 +22,9 @@ import {
   SelectValue,
 } from "./ui/select";
 import { GenericFieldConfig } from "./GenericFieldConfig";
-import type { ConfigFieldObj, ConfigFieldType } from "~/types";
+import type { ConfigFieldType } from "~/types";
+import { useActions, useConfigDetails, useConfigFields } from "~/zustand/store";
+import { CirclePlus, Loader2 } from "lucide-react";
 
 type ConfigEditorProps = {
   children: React.ReactNode;
@@ -34,7 +35,14 @@ type ConfigEditorProps = {
 };
 
 export default function ConfigEditor(props: ConfigEditorProps) {
-  const [configFields, setConfigFields] = useState<ConfigFieldObj[]>([]);
+  const { state } = useNavigation();
+
+  const containerRef = useRef<HTMLFormElement | null>(null);
+  const prevLengthRef = useRef<number>(0);
+
+  const details = useConfigDetails();
+  const fields = useConfigFields();
+  const { setConfigDetails, addConfigField } = useActions();
 
   const handleAddField = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -46,26 +54,26 @@ export default function ConfigEditor(props: ConfigEditorProps) {
       ) as ConfigFieldType | null;
 
       if (newFieldType) {
-        setConfigFields((state) => [
-          ...state,
-          { id: nanoid(), type: newFieldType },
-        ]);
+        addConfigField(newFieldType);
       }
     },
-    [setConfigFields],
+    [addConfigField],
   );
 
-  const handleDeleteField = useCallback((id: string) => {
-    setConfigFields((fields) => fields.filter((field) => field.id !== id));
-  }, []);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-  const updateField = useCallback((id: string, newType: ConfigFieldType) => {
-    setConfigFields((fields) =>
-      fields.map((field) =>
-        field.id === id ? { ...field, type: newType } : field,
-      ),
-    );
-  }, []);
+    if (prevLengthRef.current < fields.length) {
+      try {
+        container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
+      } catch (e) {
+        container.scrollTop = container.scrollHeight;
+      }
+    }
+
+    prevLengthRef.current = fields.length;
+  }, [fields.length]);
 
   return (
     <Sheet>
@@ -79,6 +87,7 @@ export default function ConfigEditor(props: ConfigEditorProps) {
         <Form
           id="configEditorForm"
           method={props.mode === "CREATE" ? "POST" : "PUT"}
+          ref={containerRef}
           className="h-full space-y-4 overflow-y-scroll px-4"
         >
           <div className="space-y-3">
@@ -89,7 +98,8 @@ export default function ConfigEditor(props: ConfigEditorProps) {
                 id="title"
                 name="title"
                 placeholder="eg: Bank - Debit Card Form"
-                defaultValue={""}
+                defaultValue={details.title ?? ""}
+                onChange={(e) => setConfigDetails("title", e.target.value)}
                 required
               />
             </Label>
@@ -100,7 +110,10 @@ export default function ConfigEditor(props: ConfigEditorProps) {
                 id="description"
                 name="description"
                 placeholder="eg: This form collects..."
-                defaultValue={""}
+                defaultValue={details.description ?? ""}
+                onChange={(e) =>
+                  setConfigDetails("description", e.target.value)
+                }
                 required
               />
             </Label>
@@ -110,17 +123,15 @@ export default function ConfigEditor(props: ConfigEditorProps) {
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium">Fields</p>
               <div className="bg-primary text-secondary grid size-6 place-content-center rounded-full text-xs">
-                {configFields.length}
+                {fields.length}
               </div>
             </div>
 
-            {configFields.length > 0 ? (
-              configFields.map((field) => (
+            {fields.length > 0 ? (
+              fields.map((field) => (
                 <GenericFieldConfig
-                  key={field.id}
-                  {...field}
-                  handleDelete={handleDeleteField}
-                  handleFieldChange={updateField}
+                  key={field.fieldId}
+                  fieldId={field.fieldId}
                 />
               ))
             ) : (
@@ -157,11 +168,24 @@ export default function ConfigEditor(props: ConfigEditorProps) {
           </form>
 
           <div className="flex w-full gap-2">
-            <SheetClose asChild>
-              <Button type="submit" form="configEditorForm" className="w-full">
-                {props.mode === "CREATE" ? "Submit form" : "Save changes"}
-              </Button>
-            </SheetClose>
+            <Button
+              disabled={state === "submitting"}
+              type="submit"
+              form="configEditorForm"
+              className="w-full"
+            >
+              {state === "submitting" ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <p>submitting...</p>
+                </>
+              ) : (
+                <p>
+                  {props.mode === "CREATE" ? "Submit form" : "Save changes"}
+                </p>
+              )}
+            </Button>
+
             <SheetClose asChild>
               <Button variant="outline" className="w-full">
                 Close
