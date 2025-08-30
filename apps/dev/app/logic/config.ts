@@ -223,6 +223,23 @@ class Config {
       additionalProperties: false,
     };
   }
+
+  public static async isValidConfigId(configId: string): Promise<boolean> {
+    try {
+      const config = await db
+        .select()
+        .from(tbConfig)
+        .where(eq(tbConfig.configId, configId))
+        .limit(1);
+
+      return config.length > 0;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else console.error(error);
+      return false;
+    }
+  }
 }
 
 export default Config;

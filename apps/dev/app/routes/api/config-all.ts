@@ -5,10 +5,10 @@ export async function loader() {
   const all = await Config.getAll();
   if (all === null)
     return Response.json(
-      { status: "error", message: "Failed to fetch" },
+      { status: "error", message: "Failed to fetch", timestamp: Date.now() },
       { status: 500 },
     );
-  return Response.json({ status: "success", data: all });
+  return Response.json({ status: "success", data: all, timestamp: Date.now() });
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -18,13 +18,21 @@ export async function action({ request }: Route.ActionArgs) {
     const created = await Config.create(body);
     if (!created)
       return Response.json(
-        { status: "fail", message: "Unable to create" },
+        { status: "fail", message: "Unable to create", timestamp: Date.now() },
         { status: 400 },
       );
-    return Response.json({ status: "success", data: created });
+    return Response.json({
+      status: "success",
+      data: created,
+      timestamp: Date.now(),
+    });
   } catch (e) {
     return Response.json(
-      { status: "error", message: e instanceof Error ? e.message : String(e) },
+      {
+        status: "error",
+        message: e instanceof Error ? e.message : String(e),
+        timestamp: Date.now(),
+      },
       { status: 500 },
     );
   }

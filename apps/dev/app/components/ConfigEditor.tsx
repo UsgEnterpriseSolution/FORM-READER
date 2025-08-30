@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef } from "react";
+import { useAutoScrollOnAppend } from "~/hooks/useAutoScrollOnAppend";
 import {
   Sheet,
   SheetClose,
@@ -10,7 +11,7 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Button } from "./ui/button";
-import { Form, useNavigation } from "react-router";
+import { Form, useActionData, useNavigation } from "react-router";
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
@@ -22,9 +23,9 @@ import {
   SelectValue,
 } from "./ui/select";
 import { GenericFieldConfig } from "./GenericFieldConfig";
-import type { ConfigFieldType } from "~/types";
+import type { AppResponse, ConfigFieldType } from "~/types";
 import { useActions, useConfigDetails, useConfigFields } from "~/zustand/store";
-import { CirclePlus, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 type ConfigEditorProps = {
   children: React.ReactNode;
@@ -35,14 +36,15 @@ type ConfigEditorProps = {
 };
 
 export default function ConfigEditor(props: ConfigEditorProps) {
+  const actionData = useActionData<AppResponse<any>>();
   const { state } = useNavigation();
 
   const containerRef = useRef<HTMLFormElement | null>(null);
-  const prevLengthRef = useRef<number>(0);
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const details = useConfigDetails();
   const fields = useConfigFields();
-  const { setConfigDetails, addConfigField } = useActions();
+  const { setConfigDetails, addConfigField, resetConfig } = useActions();
 
   const handleAddField = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -60,20 +62,15 @@ export default function ConfigEditor(props: ConfigEditorProps) {
     [addConfigField],
   );
 
+  // Auto-scroll to bottom when new fields are appended
+  useAutoScrollOnAppend(containerRef, fields.length);
+
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    if (prevLengthRef.current < fields.length) {
-      try {
-        container.scrollTo({ top: container.scrollHeight, behavior: "smooth" });
-      } catch (e) {
-        container.scrollTop = container.scrollHeight;
-      }
+    if (actionData && actionData.status === "success") {
+      resetConfig();
+      closeBtnRef.current?.click();
     }
-
-    prevLengthRef.current = fields.length;
-  }, [fields.length]);
+  }, [actionData?.timestamp]);
 
   return (
     <Sheet>
@@ -187,7 +184,7 @@ export default function ConfigEditor(props: ConfigEditorProps) {
             </Button>
 
             <SheetClose asChild>
-              <Button variant="outline" className="w-full">
+              <Button ref={closeBtnRef} variant="outline" className="w-full">
                 Close
               </Button>
             </SheetClose>

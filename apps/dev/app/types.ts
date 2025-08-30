@@ -24,16 +24,20 @@ export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";
 export type AppResponse<T> =
   | {
       status: "success";
+      message?: string;
       data: T;
+      timestamp: number;
     }
   | {
       status: "fail";
       message: string;
+      timestamp: number;
     }
   | {
       status: "error";
       message: string;
       code: number;
+      timestamp: number;
     };
 
 export type UploadLoaderRes = {

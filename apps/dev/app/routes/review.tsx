@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { href, redirect } from "react-router";
 
 import type { Route } from "./+types/review";
@@ -11,6 +10,7 @@ import Config from "~/logic/config";
 import ReviewForm from "~/components/ReviewForm";
 import type { SelectConfig } from "~/db/schema/tbConfig";
 import { Spinner } from "~/components/ui/Spinner";
+import useAppToast from "~/hooks/useAppToast";
 
 export async function action({}: Route.ActionArgs) {
   await new Promise((res) => setTimeout(res, 3000));
@@ -31,11 +31,13 @@ export async function loader({
 
       return {
         status: "success",
+        message: "Image(s) processed successfully.",
         data: {
           images: cacheData.images,
           config: await Config.get(cacheData.configId),
           fieldData: cacheData.fieldData,
         },
+        timestamp: Date.now(),
       };
     }
   } catch (error) {
@@ -43,6 +45,7 @@ export async function loader({
       code: 500,
       status: "error",
       message: error instanceof Error ? error.message : (error as string),
+      timestamp: Date.now(),
     };
   }
 }
@@ -57,20 +60,10 @@ export default function Review({ loaderData }: Route.ComponentProps) {
       if (loaderData.data.config) setConfig(loaderData.data.config);
       if (loaderData.data.images) setImages(loaderData.data.images);
       if (loaderData.data.fieldData) setData(loaderData.data.fieldData);
-
-      toast.success("Image(s) processed successfully.");
     }
+  }, [loaderData.timestamp]);
 
-    if (loaderData && loaderData.status === "fail") {
-      toast.warning(loaderData.message);
-    }
-
-    if (loaderData && loaderData.status === "error") {
-      toast.error(loaderData.message);
-    }
-
-    console.log(loaderData);
-  }, [loaderData.status]);
+  useAppToast(loaderData);
 
   return (
     <div className="max-height grid max-w-[816px] grid-cols-1 gap-6 px-6 pt-6 md:mx-auto md:grid-cols-[296px_1fr]">

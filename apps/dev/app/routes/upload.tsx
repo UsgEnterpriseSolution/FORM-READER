@@ -1,5 +1,4 @@
 import crypto from "node:crypto";
-import { toast } from "sonner";
 import { href, redirect } from "react-router";
 
 import type { Route } from "./+types/upload";
@@ -14,7 +13,7 @@ import { useFileUpload } from "~/hooks/useFileUpload";
 import LLM from "~/logic/llm";
 import Config from "~/logic/config";
 import { appCache } from "~/services/cache";
-import { useEffect } from "react";
+import useAppToast from "~/hooks/useAppToast";
 
 export async function action({
   request,
@@ -34,6 +33,7 @@ export async function action({
       return {
         status: "fail",
         message: "Invalid config Id",
+        timestamp: Date.now(),
       };
     } else {
       const fieldData = await LLM.extract(engine, images, config.schema);
@@ -48,6 +48,7 @@ export async function action({
       code: 500,
       status: "error",
       message: error instanceof Error ? error.message : (error as string),
+      timestamp: Date.now(),
     };
   }
 }
@@ -73,12 +74,14 @@ export async function loader(): Promise<AppResponse<UploadLoaderRes>> {
           { label: "Ollama", value: "OLLAMA" },
         ],
       },
+      timestamp: Date.now(),
     };
   } catch (error) {
     return {
       code: 500,
       status: "error",
       message: error instanceof Error ? error.message : (error as string),
+      timestamp: Date.now(),
     };
   }
 }
@@ -94,15 +97,7 @@ export default function Upload({ actionData }: Route.ComponentProps) {
     accept: "image/*",
   });
 
-  useEffect(() => {
-    if (actionData && actionData.status === "fail") {
-      toast.warning(actionData.message);
-    }
-
-    if (actionData && actionData.status === "error") {
-      toast.error(actionData.message);
-    }
-  }, [actionData]);
+  useAppToast(actionData);
 
   return (
     <section className="mx-4 flex h-fit max-w-[608px] flex-col gap-4 pt-10 sm:mx-auto">

@@ -10,7 +10,7 @@ export default function AppLayout() {
     <main className="mx-auto h-full max-w-[1280px]">
       <Navbar />
       <Outlet />
-      <Toaster richColors />
+      <Toaster richColors position="top-center" />
       {navigation.state === "loading" && <AppSpinner />}
     </main>
   );

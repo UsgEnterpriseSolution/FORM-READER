@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "./ui/select";
 import { useActions } from "~/zustand/store";
+import { useRef } from "react";
+import { useAutoScrollOnAppend } from "~/hooks/useAutoScrollOnAppend";
 
 type Props = {
   fieldId: string;
@@ -181,8 +183,10 @@ function FieldOptions({
   onUpdate,
   onRemove,
 }: FieldOptionsProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  useAutoScrollOnAppend(containerRef, options.length);
   return (
-    <div className="space-y-2">
+    <div ref={containerRef} className="space-y-2">
       <div className="flex items-center justify-between">
         <h6 className="text-sm font-medium">
           Options <span className="text-red-500">*</span>

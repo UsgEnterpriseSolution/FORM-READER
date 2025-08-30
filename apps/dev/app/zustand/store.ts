@@ -32,6 +32,7 @@ type Actions = {
   addConfigField: (type: ConfigFieldType) => void;
   removeConfigField: (fieldId: string) => void;
   updateConfigField: (fieldId: string, data: FieldObj) => void;
+  resetConfig: () => void;
 };
 
 type AppStore = {
@@ -168,6 +169,21 @@ export const useAppStore = create<AppStore>((set, get) => ({
             fields: store.state.config.fields.map((field) =>
               field.fieldId === fieldId ? { ...field, data } : field,
             ),
+          },
+        },
+      }));
+    },
+    resetConfig: () => {
+      set((store) => ({
+        state: {
+          ...store.state,
+          config: {
+            ...store.state.config,
+            details: {
+              title: null,
+              description: null,
+            },
+            fields: [],
           },
         },
       }));
