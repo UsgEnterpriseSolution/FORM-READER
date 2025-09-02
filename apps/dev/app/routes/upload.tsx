@@ -35,14 +35,14 @@ export async function action({
         message: "Invalid config Id",
         timestamp: Date.now(),
       };
-    } else {
-      const fieldData = await LLM.extract(engine, images, config.schema);
-
-      const cacheKey = crypto.randomUUID();
-      appCache.put(cacheKey, { configId, images, fieldData });
-
-      return redirect(href("/review/:key?", { key: cacheKey }));
     }
+
+    const fieldData = await LLM.extract(engine, images, config.schema);
+
+    const cacheKey = crypto.randomUUID();
+    appCache.put(cacheKey, { configId, images, fieldData });
+
+    return redirect(href("/review/:key?", { key: cacheKey }));
   } catch (error) {
     return {
       code: 500,
@@ -69,9 +69,9 @@ export async function loader(): Promise<AppResponse<UploadLoaderRes>> {
           value: config.configId,
         })),
         engines: [
-          { label: "Google", value: "GOOGLE" },
-          { label: "LM Studio", value: "LMSTUDIO" },
-          { label: "Ollama", value: "OLLAMA" },
+          { label: "(Online) - Google", value: "GOOGLE" },
+          { label: "(Local) - LM Studio", value: "LMSTUDIO" },
+          { label: "(Local) - Ollama", value: "OLLAMA" },
         ],
       },
       timestamp: Date.now(),

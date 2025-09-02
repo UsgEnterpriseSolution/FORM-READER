@@ -2,20 +2,66 @@ import { useEffect, useState } from "react";
 import { href, redirect } from "react-router";
 
 import type { Route } from "./+types/review";
-
-import ReviewImage from "~/components/ReviewImage";
-import { appCache, type AppCache } from "~/services/cache";
-import type { AppResponse, ReviewLoaderRes } from "~/types";
-import Config from "~/logic/config";
-import ReviewForm from "~/components/ReviewForm";
 import type { SelectConfig } from "~/db/schema/tbConfig";
+import type { AppResponse, ReviewLoaderRes } from "~/types";
+
+import { appCache, type AppCache } from "~/services/cache";
+import ReviewImage from "~/components/ReviewImage";
+import ReviewForm from "~/components/ReviewForm";
 import { Spinner } from "~/components/ui/Spinner";
 import useAppToast from "~/hooks/useAppToast";
 
-export async function action({}: Route.ActionArgs) {
-  await new Promise((res) => setTimeout(res, 3000));
+import Config from "~/logic/config";
+import Data from "~/logic/data";
 
-  return redirect(href("/submit"));
+export async function action({
+  request,
+}: Route.ActionArgs): Promise<AppResponse<any> | Response> {
+  const formData = await request.formData();
+  const submission = Object.fromEntries(formData);
+
+  try {
+    const configId = submission["configId"] as string;
+    const isValid = await Config.isValidConfigId(configId);
+
+    if (!isValid) {
+      return {
+        code: 400,
+        status: "error",
+        message: "Invalid config ID",
+        timestamp: Date.now(),
+      };
+    }
+
+    const data = await Data.parse(configId, submission);
+    if (data === null) {
+      return {
+        code: 400,
+        status: "error",
+        message: "Invalid form data",
+        timestamp: Date.now(),
+      };
+    }
+
+    const result = await Data.insert(configId, data);
+    if (result === null) {
+      return {
+        code: 500,
+        status: "error",
+        message: "Failed to insert data",
+        timestamp: Date.now(),
+      };
+    }
+
+    return redirect(href("/submit"));
+  } catch (error) {
+    return {
+      code: 500,
+      status: "error",
+      message: error instanceof Error ? error.message : (error as string),
+      timestamp: Date.now(),
+    };
+  }
 }
 
 export async function loader({
@@ -50,7 +96,10 @@ export async function loader({
   }
 }
 
-export default function Review({ loaderData }: Route.ComponentProps) {
+export default function Review({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const [config, setConfig] = useState<SelectConfig | undefined>();
   const [images, setImages] = useState<string[]>([]);
   const [data, setData] = useState<any>({});
@@ -60,10 +109,13 @@ export default function Review({ loaderData }: Route.ComponentProps) {
       if (loaderData.data.config) setConfig(loaderData.data.config);
       if (loaderData.data.images) setImages(loaderData.data.images);
       if (loaderData.data.fieldData) setData(loaderData.data.fieldData);
+
+      console.log("Field Data:", loaderData.data.fieldData);
+      console.log("Config:", loaderData.data.config);
     }
   }, [loaderData.timestamp]);
 
-  useAppToast(loaderData);
+  useAppToast(actionData);
 
   return (
     <div className="max-height grid max-w-[816px] grid-cols-1 gap-6 px-6 pt-6 md:mx-auto md:grid-cols-[296px_1fr]">

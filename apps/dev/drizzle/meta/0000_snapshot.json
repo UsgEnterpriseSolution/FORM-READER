@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "47056629-99f0-4340-bb8e-005b98a51ec9",
+  "id": "b3d7dc28-9d3f-49dd-b79b-1d93ef74b18f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "tb_config": {
@@ -28,8 +28,22 @@
           "notNull": true,
           "autoincrement": false
         },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "fields": {
           "name": "fields",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "schema": {
+          "name": "schema",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -46,6 +60,73 @@
         }
       },
       "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "tb_data": {
+      "name": "tb_data",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "data_id": {
+          "name": "data_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "config_id": {
+          "name": "config_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "data": {
+          "name": "data",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "date_extracted": {
+          "name": "date_extracted",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "tb_data_data_id_unique": {
+          "name": "tb_data_data_id_unique",
+          "columns": [
+            "data_id"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "tb_data_config_id_tb_config_config_id_fk": {
+          "name": "tb_data_config_id_tb_config_config_id_fk",
+          "tableFrom": "tb_data",
+          "tableTo": "tb_config",
+          "columnsFrom": [
+            "config_id"
+          ],
+          "columnsTo": [
+            "config_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "checkConstraints": {}

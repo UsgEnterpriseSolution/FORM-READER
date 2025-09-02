@@ -1,6 +1,6 @@
 import { nanoid } from "nanoid";
 import { create } from "zustand";
-import type { ConfigFieldType, Engine, FieldObj } from "~/types";
+import type { ConfigObj, FieldObj, StoreActions, StoreState } from "~/types";
 import {
   columnFieldTypeSchema,
   optionFieldTypeSchema,
@@ -8,36 +8,9 @@ import {
   toggleFieldTypeSchema,
 } from "~/zod";
 
-type State = {
-  settings: {
-    engine: Engine | null;
-    configId: string | null;
-  };
-  config: {
-    details: {
-      title: string | null;
-      description: string | null;
-    };
-    fields: {
-      fieldId: string;
-      data: FieldObj;
-    }[];
-  };
-};
-
-type Actions = {
-  setEngine: (engine: Engine) => void;
-  setConfigId: (configId: string) => void;
-  setConfigDetails: (key: "title" | "description", value: string) => void;
-  addConfigField: (type: ConfigFieldType) => void;
-  removeConfigField: (fieldId: string) => void;
-  updateConfigField: (fieldId: string, data: FieldObj) => void;
-  resetConfig: () => void;
-};
-
 type AppStore = {
-  state: State;
-  actions: Actions;
+  state: StoreState;
+  actions: StoreActions;
 };
 
 export const useAppStore = create<AppStore>((set, get) => ({
@@ -47,6 +20,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       configId: null,
     },
     config: {
+      loading: false,
+      mode: "CREATE",
       details: {
         title: null,
         description: null,
@@ -188,12 +163,92 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       }));
     },
+    setConfigMode: (mode) => {
+      set((store) => ({
+        state: {
+          ...store.state,
+          config: {
+            ...store.state.config,
+            mode,
+          },
+        },
+      }));
+    },
+    fetchConfiglet: async (configId) => {
+      const store = get();
+      store.actions.setConfigLoading(true);
+      try {
+        const res = await fetch(
+          `/api/configlet/${encodeURIComponent(configId)}`,
+        );
+
+        const payload = await res.json();
+
+        if (!res.ok) {
+          // backend may still return a JSON body with a message
+          const msg =
+            payload?.message || res.statusText || "Unable to load config.";
+          throw new Error(msg);
+        }
+
+        if (payload?.status !== "success") {
+          const msg = payload?.message || "Failed to load config.";
+          throw new Error(msg);
+        }
+
+        const config: ConfigObj = payload.data;
+
+        // map incoming fields (FieldObj[]) to store shape { fieldId, data }
+        const mappedFields = Array.isArray(config.fields)
+          ? config.fields.map((f) => ({ fieldId: nanoid(), data: f }))
+          : [];
+
+        set((store) => ({
+          state: {
+            ...store.state,
+            settings: { ...store.state.settings, configId },
+            config: {
+              ...store.state.config,
+              mode: "EDIT",
+              details: {
+                title: config.title ?? null,
+                description: config.description ?? null,
+              },
+              fields: mappedFields,
+            },
+          },
+        }));
+      } catch (error) {
+        // keep behavior simple: log error. callers/components can show toast if needed.
+        // eslint-disable-next-line no-console
+        console.error(
+          "fetchConfiglet error:",
+          error instanceof Error ? error.message : error,
+        );
+      } finally {
+        store.actions.setConfigLoading(false);
+      }
+    },
+    setConfigLoading: (state) => {
+      set((store) => ({
+        state: {
+          ...store.state,
+          config: {
+            ...store.state.config,
+            loading: state,
+          },
+        },
+      }));
+    },
   },
 }));
 
 export const useActions = () => useAppStore((store) => store.actions);
 
 export const useSettings = () => useAppStore((store) => store.state.settings);
+
+export const useConfigMode = () =>
+  useAppStore((store) => store.state.config.mode);
 
 export const useConfigDetails = () =>
   useAppStore((store) => store.state.config.details);
@@ -205,3 +260,6 @@ export const useConfigField = (id: string) =>
   useAppStore((store) =>
     store.state.config.fields.find((field) => field.fieldId === id),
   );
+
+export const useConfigLoading = () =>
+  useAppStore((store) => store.state.config.loading);

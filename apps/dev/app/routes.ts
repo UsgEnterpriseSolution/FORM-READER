@@ -11,9 +11,7 @@ export default [
     route("review/:key?", "routes/review.tsx"),
     route("submit", "routes/submit.tsx"),
     route("config", "routes/config.tsx"),
-    route("beta/config", "routes/config-beta.tsx"),
+    route("data", "routes/data.tsx"),
   ]),
-  // API routes
-  route("api/configs", "routes/api/config-all.ts"),
-  route("api/configs/:id", "routes/api/config-id.ts"),
+  route("api/configlet/:configId", "routes/api/configlet.ts"),
 ] satisfies RouteConfig;

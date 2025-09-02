@@ -113,7 +113,7 @@ class Config {
     try {
       const result = await db
         .update(tbConfig)
-        .set(rawConfig)
+        .set({ ...rawConfig, schema: await this.genSchema(rawConfig.fields) })
         .where(eq(tbConfig.configId, configId))
         .returning();
 
@@ -150,7 +150,7 @@ class Config {
       if (textFieldZodObj.success) {
         const { name, type, defaultValue } = textFieldZodObj.data;
 
-        if (type) {
+        if (type === "NUMBER") {
           properties[name] = {
             type: "number",
             default: defaultValue,
@@ -175,7 +175,9 @@ class Config {
         properties[name] = {
           type: "string",
           enum: options.map((option) => option.value),
-          default: defaultValue,
+          default: options.map((option) => option.value).includes(defaultValue)
+            ? defaultValue
+            : "",
         };
 
         required.push(name);

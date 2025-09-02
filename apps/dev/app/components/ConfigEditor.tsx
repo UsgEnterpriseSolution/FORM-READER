@@ -23,28 +23,65 @@ import {
   SelectValue,
 } from "./ui/select";
 import { GenericFieldConfig } from "./GenericFieldConfig";
-import type { AppResponse, ConfigFieldType } from "~/types";
-import { useActions, useConfigDetails, useConfigFields } from "~/zustand/store";
+import type { AppResponse, ConfigFieldType, EditorDetails } from "~/types";
+import {
+  useActions,
+  useConfigDetails,
+  useConfigFields,
+  useConfigLoading,
+  useConfigMode,
+} from "~/zustand/store";
 import { Loader2 } from "lucide-react";
 
 type ConfigEditorProps = {
   children: React.ReactNode;
-  mode: "CREATE" | "EDIT";
-  title: string;
-  description: string;
   configId?: string;
 };
 
-export default function ConfigEditor(props: ConfigEditorProps) {
+export default function ConfigEditor({
+  children,
+  configId,
+}: ConfigEditorProps) {
   const actionData = useActionData<AppResponse<any>>();
   const { state } = useNavigation();
+
+  const mode = useConfigMode();
+  const details = useConfigDetails();
+  const fields = useConfigFields();
+  const isConfigLoading = useConfigLoading();
+  const { setConfigDetails, addConfigField, resetConfig } = useActions();
 
   const containerRef = useRef<HTMLFormElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
 
-  const details = useConfigDetails();
-  const fields = useConfigFields();
-  const { setConfigDetails, addConfigField, resetConfig } = useActions();
+  const editorDetails = (): EditorDetails => {
+    switch (mode) {
+      case "CREATE":
+        return {
+          method: "POST",
+          title: "Add form",
+          description:
+            "Create a new form by providing a title, description, and adding fields below.",
+          submitLabel: "Submit form",
+        };
+      case "EDIT":
+        return {
+          method: "PUT",
+          title: "Edit form",
+          description:
+            "Update the form by modifying the title, description, and fields below.",
+          submitLabel: "Save changes",
+        };
+
+      case "VIEW":
+        return {
+          method: "GET",
+          title: "View form",
+          description: "View the form's title, description, and fields below.",
+          submitLabel: "Save changes",
+        };
+    }
+  };
 
   const handleAddField = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,6 +99,10 @@ export default function ConfigEditor(props: ConfigEditorProps) {
     [addConfigField],
   );
 
+  const handleClose = () => {
+    if (mode !== "CREATE") resetConfig();
+  };
+
   // Auto-scroll to bottom when new fields are appended
   useAutoScrollOnAppend(containerRef, fields.length);
 
@@ -74,16 +115,22 @@ export default function ConfigEditor(props: ConfigEditorProps) {
 
   return (
     <Sheet>
-      <SheetTrigger asChild>{props.children}</SheetTrigger>
+      <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent>
+        {isConfigLoading && (
+          <div className="bg-primary-foreground/80 absolute inset-0 flex items-center justify-center">
+            <Loader2 className="animate-spin" />
+          </div>
+        )}
+
         <SheetHeader>
-          <SheetTitle>{props.title}</SheetTitle>
-          <SheetDescription>{props.description}</SheetDescription>
+          <SheetTitle>{editorDetails().title}</SheetTitle>
+          <SheetDescription>{editorDetails().description}</SheetDescription>
         </SheetHeader>
 
         <Form
           id="configEditorForm"
-          method={props.mode === "CREATE" ? "POST" : "PUT"}
+          method={editorDetails().method}
           ref={containerRef}
           className="h-full space-y-4 overflow-y-scroll px-4"
         >
@@ -115,6 +162,13 @@ export default function ConfigEditor(props: ConfigEditorProps) {
               />
             </Label>
           </div>
+
+          <Input
+            type="hidden"
+            id="configId"
+            name="configId"
+            defaultValue={configId ?? ""}
+          />
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -177,14 +231,17 @@ export default function ConfigEditor(props: ConfigEditorProps) {
                   <p>submitting...</p>
                 </>
               ) : (
-                <p>
-                  {props.mode === "CREATE" ? "Submit form" : "Save changes"}
-                </p>
+                <p>{editorDetails().submitLabel}</p>
               )}
             </Button>
 
             <SheetClose asChild>
-              <Button ref={closeBtnRef} variant="outline" className="w-full">
+              <Button
+                ref={closeBtnRef}
+                variant="outline"
+                className="w-full"
+                onClick={handleClose}
+              >
                 Close
               </Button>
             </SheetClose>

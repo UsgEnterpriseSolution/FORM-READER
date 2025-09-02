@@ -87,21 +87,43 @@ export type FieldObj = z.infer<typeof fieldSchema>;
 export type RawConfig = z.infer<typeof rawConfigSchema>;
 export type ConfigObj = z.infer<typeof configSchema>;
 
-// New Configuration Data Model (per project rules Step 2)
-export interface FormField {
-  name: string;
-  type: string;
-  label: string;
-  required: boolean;
-  options?: any[];
-  validation?: Record<string, any>;
-}
+export type EditorDetails = {
+  method: "POST" | "PUT" | "GET";
+  title: string;
+  description: string;
+  submitLabel: string;
+};
 
-export interface FormConfig {
-  id: string;
-  name: string;
-  description?: string;
-  fields: FormField[];
-  created: Date;
-  modified: Date;
-}
+// --- Store types ---
+
+export type StoreState = {
+  settings: {
+    engine: Engine | null;
+    configId: string | null;
+  };
+  config: {
+    loading: boolean;
+    mode: "CREATE" | "EDIT" | "VIEW";
+    details: {
+      title: string | null;
+      description: string | null;
+    };
+    fields: {
+      fieldId: string;
+      data: FieldObj;
+    }[];
+  };
+};
+
+export type StoreActions = {
+  setEngine: (engine: Engine) => void;
+  setConfigId: (configId: string) => void;
+  setConfigDetails: (key: "title" | "description", value: string) => void;
+  addConfigField: (type: ConfigFieldType) => void;
+  removeConfigField: (fieldId: string) => void;
+  updateConfigField: (fieldId: string, data: FieldObj) => void;
+  resetConfig: () => void;
+  setConfigMode: (mode: "CREATE" | "EDIT" | "VIEW") => void;
+  fetchConfiglet: (configId: string) => Promise<void>;
+  setConfigLoading: (state: boolean) => void;
+};

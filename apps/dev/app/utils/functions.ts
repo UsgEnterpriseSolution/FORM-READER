@@ -1,5 +1,3 @@
-import { textFieldTypeSchema } from "~/zod";
-
 export async function convertToDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

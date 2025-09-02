@@ -1,4 +1,4 @@
-import type { Field } from "~/types";
+import type { FieldObj } from "~/types";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
@@ -10,60 +10,75 @@ import {
   SelectValue,
 } from "./ui/select";
 import { PhoneInput } from "./PhoneInput";
+import DateInput from "./ui/DateInput";
+import CheckboxGroup from "./ui/CheckboxGroup";
 
 type GenericFieldProp = {
-  field: Field;
+  field: FieldObj;
   data: any;
 };
 
 export default function GenericField({ field, data }: GenericFieldProp) {
   switch (field.type) {
-    case "text":
-    case "email":
-    case "number":
+    case "TEXT":
+    case "EMAIL":
+    case "NUMBER":
       return (
-        <div>
-          <Label>{field.label}</Label>
+        <div className="space-y-2">
+          <Label className="block">{field.label}</Label>
           <Input
-            type={field.type}
+            type={field.type.toLocaleLowerCase()}
             name={field.name}
             placeholder={field.placeholder}
-            required={field.validation.isRequired}
+            required={field.isRequired}
             defaultValue={data[field.name]}
           />
         </div>
       );
-    case "phone":
+
+    case "PHONE":
       return (
-        <div>
-          <Label>{field.label}</Label>
+        <div className="space-y-2">
+          <Label className="block">{field.label}</Label>
           <PhoneInput
             name={field.name}
             placeholder={field.placeholder}
-            required={field.validation.isRequired}
+            required={field.isRequired}
             value={data[field.name]}
           />
         </div>
       );
 
-    case "textarea":
+    case "DATE":
       return (
-        <div>
-          <Label>{field.label}</Label>
+        <div className="space-y-2">
+          <Label className="block">{field.label}</Label>
+          <DateInput
+            name={field.name}
+            required={field.isRequired}
+            value={data[field.name]}
+          />
+        </div>
+      );
+
+    case "TEXTAREA":
+      return (
+        <div className="space-y-2">
+          <Label className="block">{field.label}</Label>
           <Textarea
             name={field.name}
             placeholder={field.placeholder}
-            required={field.validation.isRequired}
+            required={field.isRequired}
             defaultValue={JSON.stringify(data[field.name])}
           />
         </div>
       );
 
-    case "select":
+    case "SELECT":
       return (
-        <div>
-          <Select defaultValue={data[field.name]}>
-            <Label>{field.label}</Label>
+        <div className="space-y-2">
+          <Select name={field.name} defaultValue={data[field.name]}>
+            <Label className="block">{field.label}</Label>
             <SelectTrigger className="w-full">
               <SelectValue placeholder={field.placeholder} />
             </SelectTrigger>
@@ -78,14 +93,26 @@ export default function GenericField({ field, data }: GenericFieldProp) {
         </div>
       );
 
-    case "checkbox":
-      return <p>Checkbox field</p>;
+    case "CHECKBOX":
+      return (
+        <CheckboxGroup
+          label={field.label}
+          options={field.options}
+          defaultOption={data[field.name]}
+          onChange={(values) => console.log(values)}
+        />
+      );
+
+    case "RADIO":
+      return <p>Radio field</p>;
+
+    case "TABLE":
+      return <p>Table field</p>;
+
+    case "SWITCH":
+      return <p>Switch field</p>;
 
     default:
-      // @ts-expect-error
-      <p>{field.type}</p>;
-      // @ts-expect-error
-      console.log(field.type);
-    // throw new Error("Invalid field type.");
+      return <p>Unknown field type</p>;
   }
 }

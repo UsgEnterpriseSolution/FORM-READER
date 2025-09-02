@@ -50,21 +50,17 @@ export default function Navbar() {
           </NavLink>
         )}
 
-        {path !== href("/config") ? (
-          <div className="flex gap-6">
-            <Stepper index={1} isActive={path === href("/")}>
-              Upload
-            </Stepper>
-            <Stepper index={2} isActive={path?.includes("/review/")}>
-              Review
-            </Stepper>
-            <Stepper index={3} isActive={path === href("/submit")}>
-              Submit
-            </Stepper>
-          </div>
-        ) : (
-          <p className="text-sm font-medium">Configurations</p>
-        )}
+        <div className="flex gap-6">
+          <Stepper index={1} isActive={path === href("/")}>
+            Upload
+          </Stepper>
+          <Stepper index={2} isActive={path?.includes("/review/")}>
+            Review
+          </Stepper>
+          <Stepper index={3} isActive={path === href("/submit")}>
+            Submit
+          </Stepper>
+        </div>
 
         {path?.includes("/review/") ? (
           <ReviewSubmitModal />
