@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { db } from "~/db/database";
 import Config from "./config";
 import { tbData } from "~/db/schema/tbData";
+import { desc, eq } from "drizzle-orm";
 
 type Submission = {
   [k: string]: FormDataEntryValue;
@@ -66,8 +67,57 @@ class Data {
     }
   }
 
-  public static async getAll() {}
-  public static async get() {}
+  public static async getAll() {
+    try {
+      const result = await db
+        .select()
+        .from(tbData)
+        .orderBy(desc(tbData.date_extracted));
+
+      return result.length > 0 ? result : null;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else console.error(error);
+
+      return null;
+    }
+  }
+  public static async get(dataId: string) {
+    try {
+      const result = await db
+        .select()
+        .from(tbData)
+        .where(eq(tbData.dataId, dataId))
+        .limit(1);
+
+      return result.length > 0 ? result[0] : null;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else console.error(error);
+
+      return null;
+    }
+  }
+
+  public static async isValidId(id: string) {
+    try {
+      const result = await db
+        .select()
+        .from(tbData)
+        .where(eq(tbData.dataId, id))
+        .limit(1);
+
+      return result.length > 0;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else console.error(error);
+
+      return false;
+    }
+  }
 }
 
 export default Data;

@@ -42,7 +42,7 @@ export async function action({
     const cacheKey = crypto.randomUUID();
     appCache.put(cacheKey, { configId, images, fieldData });
 
-    return redirect(href("/review/:key?", { key: cacheKey }));
+    return redirect(href("/review/:key", { key: cacheKey }));
   } catch (error) {
     return {
       code: 500,

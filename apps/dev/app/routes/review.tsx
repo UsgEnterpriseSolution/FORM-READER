@@ -26,8 +26,7 @@ export async function action({
 
     if (!isValid) {
       return {
-        code: 400,
-        status: "error",
+        status: "fail",
         message: "Invalid config ID",
         timestamp: Date.now(),
       };
@@ -36,8 +35,7 @@ export async function action({
     const data = await Data.parse(configId, submission);
     if (data === null) {
       return {
-        code: 400,
-        status: "error",
+        status: "fail",
         message: "Invalid form data",
         timestamp: Date.now(),
       };
@@ -46,14 +44,13 @@ export async function action({
     const result = await Data.insert(configId, data);
     if (result === null) {
       return {
-        code: 500,
-        status: "error",
+        status: "fail",
         message: "Failed to insert data",
         timestamp: Date.now(),
       };
     }
 
-    return redirect(href("/submit"));
+    return redirect(href("/submit/:dataId", { dataId: result.dataId }));
   } catch (error) {
     return {
       code: 500,
@@ -69,23 +66,22 @@ export async function loader({
 }: Route.LoaderArgs): Promise<Response | AppResponse<ReviewLoaderRes>> {
   try {
     const cacheKey = params.key;
-
-    if (cacheKey === undefined || !appCache.has(cacheKey)) {
+    if (!appCache.has(cacheKey)) {
       return redirect(href("/"));
-    } else {
-      const cacheData = appCache.get(cacheKey) as AppCache;
-
-      return {
-        status: "success",
-        message: "Image(s) processed successfully.",
-        data: {
-          images: cacheData.images,
-          config: await Config.get(cacheData.configId),
-          fieldData: cacheData.fieldData,
-        },
-        timestamp: Date.now(),
-      };
     }
+
+    const cacheData = appCache.get(cacheKey) as AppCache;
+
+    return {
+      status: "success",
+      message: "Image(s) processed successfully.",
+      data: {
+        images: cacheData.images,
+        config: await Config.get(cacheData.configId),
+        fieldData: cacheData.fieldData,
+      },
+      timestamp: Date.now(),
+    };
   } catch (error) {
     return {
       code: 500,

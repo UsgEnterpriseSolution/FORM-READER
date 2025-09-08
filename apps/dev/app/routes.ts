@@ -8,10 +8,10 @@ import {
 export default [
   layout("layout/AppLayout.tsx", [
     index("routes/upload.tsx"),
-    route("review/:key?", "routes/review.tsx"),
-    route("submit", "routes/submit.tsx"),
+    route("review/:key", "routes/review.tsx"),
+    route("submit/:dataId", "routes/submit.tsx"),
     route("config", "routes/config.tsx"),
-    route("data", "routes/data.tsx"),
+    route("data/:dataId?", "routes/data.tsx"),
   ]),
   route("api/configlet/:configId", "routes/api/configlet.ts"),
 ] satisfies RouteConfig;

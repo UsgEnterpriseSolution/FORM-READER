@@ -6,6 +6,7 @@ import Stepper from "./Stepper";
 import HomeBlockerModel from "./HomeBlockerModel";
 import { Button } from "./ui/button";
 import ReviewSubmitModal from "./ReviewSubmitModal";
+import NavMenu from "./NavMenu";
 
 export default function Navbar() {
   const [path, setPath] = useState<string>();
@@ -14,7 +15,7 @@ export default function Navbar() {
 
   const homePageBlocker = useBlocker(({ nextLocation, currentLocation }) => {
     if (
-      currentLocation.pathname.includes("/review/") &&
+      currentLocation.pathname.includes("/review") &&
       nextLocation.pathname === href("/")
     ) {
       return true;
@@ -40,7 +41,7 @@ export default function Navbar() {
       )}
 
       <div className="flex h-16 items-center justify-between gap-4">
-        {path?.includes("/review/") ? (
+        {path?.includes("/review") ? (
           <Button variant="secondary" onClick={() => navigate(href("/"))}>
             Back
           </Button>
@@ -54,21 +55,15 @@ export default function Navbar() {
           <Stepper index={1} isActive={path === href("/")}>
             Upload
           </Stepper>
-          <Stepper index={2} isActive={path?.includes("/review/")}>
+          <Stepper index={2} isActive={path?.includes("/review")}>
             Review
           </Stepper>
-          <Stepper index={3} isActive={path === href("/submit")}>
+          <Stepper index={3} isActive={path?.includes("/submit")}>
             Submit
           </Stepper>
         </div>
 
-        {path?.includes("/review/") ? (
-          <ReviewSubmitModal />
-        ) : (
-          <NavLink to={href("/config")} className="cursor-pointer">
-            <Settings />
-          </NavLink>
-        )}
+        {path?.includes("/review") ? <ReviewSubmitModal /> : <NavMenu />}
       </div>
     </header>
   );
