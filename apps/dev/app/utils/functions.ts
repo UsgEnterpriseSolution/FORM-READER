@@ -17,3 +17,14 @@ export async function convertToDataUrl(file: File): Promise<string> {
     reader.readAsDataURL(file);
   });
 }
+
+export function formateDate(dateString: string): string {
+  const date = new Date(dateString);
+  return date.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Settings, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { href, NavLink, useBlocker, useNavigate } from "react-router";
 
 import Stepper from "./Stepper";

@@ -14,10 +14,25 @@ import type {
   toggleFieldSchema,
   toggleFieldTypeSchema,
 } from "./zod";
+import type { SelectData } from "./db/schema/tbData";
 
 // --- Generic types ---
 
 export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";
+
+export type DataLog = {
+  id: number;
+  dataId: string;
+  formTitle: string;
+  extDate: string;
+  data: { [k: PropertyKey]: any };
+};
+
+export type DataLogMinified = {
+  extDate: string;
+  dataId: string;
+  formTitle: string;
+};
 
 // --- Response types ---
 
@@ -126,4 +141,5 @@ export type StoreActions = {
   setConfigMode: (mode: "CREATE" | "EDIT" | "VIEW") => void;
   fetchConfiglet: (configId: string) => Promise<void>;
   setConfigLoading: (state: boolean) => void;
+  fetchDataLog: (dataId: string) => Promise<AppResponse<DataLog>>;
 };

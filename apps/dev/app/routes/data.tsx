@@ -8,67 +8,16 @@ import {
 } from "~/components/ui/table";
 import type { Route } from "./+types/data";
 import { Button } from "~/components/ui/button";
-import { Eye } from "lucide-react";
+import { Clipboard, Eye } from "lucide-react";
 import Data from "~/logic/data";
-import type { AppResponse } from "~/types";
-import type { SelectData } from "~/db/schema/tbData";
-import { href, useNavigate } from "react-router";
+import type { AppResponse, DataLog } from "~/types";
+import { formateDate } from "~/utils/functions";
+import Config from "~/logic/config";
+import DataLogViewer from "~/components/DataLogViewer";
+import DataLogSearch from "~/components/DataLogSearch";
 
-export async function action({ params }: Route.ActionArgs) {
+export async function loader(): Promise<AppResponse<DataLog[]> | Response> {
   try {
-    const { dataId } = params;
-    if (!dataId) {
-      return {
-        status: "fail",
-        message: "No data ID provided",
-        timestamp: Date.now(),
-      };
-    }
-
-    const data = await Data.get(dataId);
-    if (!data) {
-      return {
-        status: "fail",
-        message: "No data found",
-        timestamp: Date.now(),
-      };
-    }
-
-    return {
-      status: "success",
-      data: [data],
-      timestamp: Date.now(),
-    };
-  } catch (error) {
-    return {
-      status: "error",
-      message: error instanceof Error ? error.message : (error as string),
-      timestamp: Date.now(),
-    };
-  }
-}
-
-export async function loader({
-  params,
-}: Route.LoaderArgs): Promise<AppResponse<SelectData[]> | Response> {
-  try {
-    if (params.dataId) {
-      const data = await Data.get(params.dataId);
-      if (!data) {
-        return {
-          status: "fail",
-          message: "No data found",
-          timestamp: Date.now(),
-        };
-      }
-
-      return {
-        status: "success",
-        data: [data],
-        timestamp: Date.now(),
-      };
-    }
-
     const data = await Data.getAll();
     if (!data) {
       return {
@@ -78,9 +27,23 @@ export async function loader({
       };
     }
 
+    const dataLogs: DataLog[] = [];
+    for (const dataLog of data) {
+      const configId = dataLog.configId;
+      if (!configId) continue;
+
+      dataLogs.push({
+        id: dataLog.id,
+        dataId: dataLog.dataId,
+        formTitle: (await Config.title(configId)) ?? configId,
+        extDate: dataLog.date_extracted,
+        data: dataLog.data as { [k: PropertyKey]: any },
+      });
+    }
+
     return {
       status: "success",
-      data,
+      data: dataLogs,
       timestamp: Date.now(),
     };
   } catch (error) {
@@ -94,25 +57,19 @@ export async function loader({
 }
 
 export default function Component({ loaderData }: Route.ComponentProps) {
-  const navigate = useNavigate();
-
   return (
     <section className="space-y-4 px-6 py-4">
       <div className="flex items-center justify-between">
         <p className="text-2xl font-medium">Data Logs </p>
-
-        <Button onClick={() => navigate(href("/data/:dataId?"))}>
-          View All
-        </Button>
+        <DataLogSearch />
       </div>
 
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>NO</TableHead>
-            <TableHead>Data Id</TableHead>
-            <TableHead>Config Id</TableHead>
             <TableHead>Extraction Date</TableHead>
+            <TableHead>Data Id</TableHead>
+            <TableHead>Config</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -120,25 +77,30 @@ export default function Component({ loaderData }: Route.ComponentProps) {
         <TableBody>
           {loaderData &&
             loaderData.status === "success" &&
-            loaderData.data.map((item, index) => (
-              <TableRow key={item.id}>
+            loaderData.data.map((item) => (
+              <TableRow key={item.dataId}>
+                <TableCell className="max-w-[100px]">
+                  {formateDate(item.extDate)}
+                </TableCell>
+                <TableCell className="truncate">{item.dataId}</TableCell>
+                <TableCell className="truncate">{item.formTitle}</TableCell>
                 <TableCell>
-                  <div className="bg-primary text-secondary grid size-8 place-content-center rounded-full">
-                    {index + 1}
-                  </div>
-                </TableCell>
-                <TableCell className="max-w-[140px] truncate">
-                  {item.dataId}
-                </TableCell>
-                <TableCell className="max-w-[140px] truncate">
-                  {item.configId}
-                </TableCell>
-                <TableCell>{item.date_extracted}</TableCell>
-                <TableCell>
-                  <Button variant="default">
-                    <Eye />
-                    <span>View</span>
-                  </Button>
+                  <span className="space-x-2">
+                    <Button variant="outline" size="icon">
+                      <Clipboard />
+                    </Button>
+
+                    <DataLogViewer
+                      dataId={item.dataId}
+                      formTitle={item.formTitle}
+                      extDate={item.extDate}
+                      data={item.data}
+                    >
+                      <Button variant="outline" size="icon">
+                        <Eye />
+                      </Button>
+                    </DataLogViewer>
+                  </span>
                 </TableCell>
               </TableRow>
             ))}

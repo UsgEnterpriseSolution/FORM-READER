@@ -1,35 +1,33 @@
-import { PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-import { Popover } from "./ui/popover";
 import { Button } from "./ui/button";
-import { Database, Ellipsis, Settings } from "lucide-react";
-import { href, NavLink } from "react-router";
+import { Ellipsis } from "lucide-react";
+import { href, NavLink, useNavigate } from "react-router";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "./ui/dropdown-menu";
 
 export default function NavMenu() {
+  const navigate = useNavigate();
+
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           <Ellipsis />
         </Button>
-      </PopoverTrigger>
+      </DropdownMenuTrigger>
 
-      <PopoverContent>
-        <div className="ring-muted flex flex-col rounded-md bg-white p-2 ring">
-          <NavLink to={href("/config")} className="cursor-pointer">
-            <Button variant="ghost" className="w-full justify-start">
-              <Settings />
-              <span>Config</span>
-            </Button>
-          </NavLink>
+      <DropdownMenuContent>
+        <DropdownMenuItem onClick={() => navigate(href("/config"))}>
+          Config
+        </DropdownMenuItem>
 
-          <NavLink to={href("/data/:dataId?")} className="cursor-pointer">
-            <Button variant="ghost" className="w-full justify-start">
-              <Database />
-              <span>Data logs</span>
-            </Button>
-          </NavLink>
-        </div>
-      </PopoverContent>
-    </Popover>
+        <DropdownMenuItem onClick={() => navigate(href("/data/:dataId?"))}>
+          Data logs
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

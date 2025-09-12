@@ -52,7 +52,7 @@ export default function Submit({ params, loaderData }: Route.ComponentProps) {
   };
 
   const handleView = () => {
-    navigate(href("/data/:dataId?", { dataId: params.dataId }));
+    navigate(href("/data"));
   };
 
   const blocker = useBlocker(({ nextLocation }) =>
@@ -98,7 +98,7 @@ export default function Submit({ params, loaderData }: Route.ComponentProps) {
 
         <Button variant="default" onClick={handleView}>
           <Eye />
-          <span>View submission</span>
+          <span>View data logs</span>
         </Button>
       </div>
     </section>

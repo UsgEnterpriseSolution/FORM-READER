@@ -242,6 +242,22 @@ class Config {
       return false;
     }
   }
+
+  public static async title(configId: string) {
+    try {
+      const config = await db
+        .select({ title: tbConfig.title })
+        .from(tbConfig)
+        .where(eq(tbConfig.configId, configId))
+        .limit(1);
+      return config[0]?.title ?? null;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else console.error(error);
+      return null;
+    }
+  }
 }
 
 export default Config;

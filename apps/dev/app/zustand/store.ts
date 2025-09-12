@@ -240,6 +240,19 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       }));
     },
+    fetchDataLog: async (dataId) => {
+      try {
+        const res = await fetch(`/api/datalog/${dataId}`);
+
+        if (!res.ok) {
+          throw new Error("Unable to retrieve data log.");
+        }
+
+        return await res.json();
+      } catch (error) {
+        throw error;
+      }
+    },
   },
 }));
 
