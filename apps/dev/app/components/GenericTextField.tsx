@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
 
 import type { TextField } from "~/types";
-import { useActions } from "~/zustand/store";
+import { useActions } from "~/zustand";
 
 type Props = {
   fieldId: string;

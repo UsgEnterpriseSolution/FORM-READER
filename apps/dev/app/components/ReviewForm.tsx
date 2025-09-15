@@ -3,7 +3,6 @@ import { Form } from "react-router";
 import type { SelectConfig } from "~/db/schema/tbConfig";
 import { cn } from "~/lib/utils";
 import GenericField from "./GenericField";
-import { useEffect } from "react";
 import { Input } from "./ui/input";
 
 type ReviewFormProps = {
@@ -26,7 +25,7 @@ export default function ReviewForm({
         method="POST"
         className="grid h-fit grid-cols-2 gap-3 space-y-3"
       >
-        <Input type="hidden" name="configId" value={config?.configId} />
+        <Input type="hidden" name="configRef" value={config?.configRef} />
 
         {config &&
           config.fields.map((field, index) => (

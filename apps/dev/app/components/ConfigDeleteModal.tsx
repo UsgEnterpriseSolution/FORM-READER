@@ -16,12 +16,12 @@ import { Form } from "react-router";
 
 type ConfigDeleteModalProps = {
   children?: React.ReactNode;
-  configId: string;
+  configRef: string;
 };
 
 export default function ConfigDeleteModal({
   children,
-  configId,
+  configRef,
 }: ConfigDeleteModalProps) {
   return (
     <AlertDialog>
@@ -45,8 +45,8 @@ export default function ConfigDeleteModal({
             </AlertDialogDescription>
           </AlertDialogHeader>
         </div>
-        <Form id={`delete-config-${configId}`} method="DELETE">
-          <input type="hidden" name="configId" value={configId} />
+        <Form id={`delete-config-${configRef}`} method="DELETE">
+          <input type="hidden" name="configRef" value={configRef} />
         </Form>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
@@ -54,7 +54,7 @@ export default function ConfigDeleteModal({
             <Button
               variant="destructive"
               type="submit"
-              form={`delete-config-${configId}`}
+              form={`delete-config-${configRef}`}
             >
               Delete
             </Button>

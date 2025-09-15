@@ -63,17 +63,21 @@ export const fieldSchema = z.union([
 
 export const configSchema = z.object({
   id: z.number(),
-  configId: z.string(),
+  configRef: z.string(),
   title: z.string(),
   description: z.string(),
   fields: z.array(fieldSchema),
-  schema: z.record(z.string(), z.any()),
+  ajvSchema: z.record(z.string(), z.any()),
+  createdOn: z.string(),
+  updatedOn: z.string().nullable(),
 });
 
 export const rawConfigSchema = configSchema.omit({
   id: true,
-  configId: true,
-  schema: true,
+  configRef: true,
+  ajvSchema: true,
+  createdOn: true,
+  updatedOn: true,
 });
 
 export const reviewPayloadSchema = z.object({

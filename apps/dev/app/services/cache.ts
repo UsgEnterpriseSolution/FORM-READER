@@ -91,7 +91,7 @@ export class LRUCache<K, V> {
 }
 
 export type AppCache = {
-  configId: string;
+  configRef: string;
   images: string[];
   fieldData: object;
 };

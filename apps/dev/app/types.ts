@@ -14,15 +14,14 @@ import type {
   toggleFieldSchema,
   toggleFieldTypeSchema,
 } from "./zod";
-import type { SelectData } from "./db/schema/tbData";
 
 // --- Generic types ---
 
-export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA";
+export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA" | "OPENAI";
 
 export type DataLog = {
   id: number;
-  dataId: string;
+  dataRef: string;
   formTitle: string;
   extDate: string;
   data: { [k: PropertyKey]: any };
@@ -30,7 +29,7 @@ export type DataLog = {
 
 export type DataLogMinified = {
   extDate: string;
-  dataId: string;
+  dataRef: string;
   formTitle: string;
 };
 
@@ -63,11 +62,12 @@ export type UploadLoaderRes = {
   engines: Array<{
     label: string;
     value: Engine;
+    isLocal: boolean;
   }>;
 };
 
 export type ConfigLoaderRes = Array<{
-  configId: string;
+  configRef: string;
   title: string;
   description: string;
   lastUpdated: string;
@@ -114,7 +114,7 @@ export type EditorDetails = {
 export type StoreState = {
   settings: {
     engine: Engine | null;
-    configId: string | null;
+    configRef: string | null;
   };
   config: {
     loading: boolean;
@@ -132,14 +132,14 @@ export type StoreState = {
 
 export type StoreActions = {
   setEngine: (engine: Engine) => void;
-  setConfigId: (configId: string) => void;
+  setconfigRef: (configRef: string) => void;
   setConfigDetails: (key: "title" | "description", value: string) => void;
   addConfigField: (type: ConfigFieldType) => void;
   removeConfigField: (fieldId: string) => void;
   updateConfigField: (fieldId: string, data: FieldObj) => void;
   resetConfig: () => void;
   setConfigMode: (mode: "CREATE" | "EDIT" | "VIEW") => void;
-  fetchConfiglet: (configId: string) => Promise<void>;
+  fetchConfiglet: (configRef: string) => Promise<void>;
   setConfigLoading: (state: boolean) => void;
-  fetchDataLog: (dataId: string) => Promise<AppResponse<DataLog>>;
+  fetchDataLog: (dataRef: string) => Promise<AppResponse<DataLog>>;
 };

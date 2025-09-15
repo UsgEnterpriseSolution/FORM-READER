@@ -8,8 +8,8 @@ export async function loader({
   params,
 }: Route.ActionArgs): Promise<AppResponse<DataLog>> {
   try {
-    const { dataId } = params;
-    if (!dataId) {
+    const { dataRef } = params;
+    if (!dataRef) {
       return {
         status: "fail",
         message: "No data ID provided",
@@ -17,7 +17,7 @@ export async function loader({
       };
     }
 
-    const data = await Data.get(dataId);
+    const data = await Data.get(dataRef);
     if (!data) {
       return {
         status: "fail",
@@ -26,8 +26,8 @@ export async function loader({
       };
     }
 
-    const configId = data.configId;
-    if (!configId) {
+    const configRef = data.configRef;
+    if (!configRef) {
       return {
         status: "fail",
         message: "No config ID found",
@@ -39,9 +39,9 @@ export async function loader({
       status: "success",
       data: {
         id: data.id,
-        dataId: data.dataId,
-        formTitle: (await Config.title(configId)) ?? configId,
-        extDate: data.date_extracted,
+        dataRef: data.dataRef,
+        formTitle: (await Config.title(configRef)) ?? configRef,
+        extDate: data.createdOn,
         data: data.data as { [k: PropertyKey]: any },
       },
       timestamp: Date.now(),

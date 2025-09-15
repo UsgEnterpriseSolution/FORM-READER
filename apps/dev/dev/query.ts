@@ -2,7 +2,7 @@ import { db } from "~/db/database";
 import { tbConfig, type InsertConfig } from "~/db/schema/tbConfig";
 
 const configA: InsertConfig = {
-  configId: "bfece89d-3e98-42b2-b818-c89f811f5863",
+  configRef: "bfece89d-3e98-42b2-b818-c89f811f5863",
   title: "Example Form A",
   description: "This is just a dummy form to test config functionality.",
   schema: {

@@ -30,17 +30,17 @@ import {
   useConfigFields,
   useConfigLoading,
   useConfigMode,
-} from "~/zustand/store";
+} from "~/zustand";
 import { Loader2 } from "lucide-react";
 
 type ConfigEditorProps = {
   children: React.ReactNode;
-  configId?: string;
+  configRef?: string;
 };
 
 export default function ConfigEditor({
   children,
-  configId,
+  configRef,
 }: ConfigEditorProps) {
   const actionData = useActionData<AppResponse<any>>();
   const { state } = useNavigation();
@@ -165,9 +165,9 @@ export default function ConfigEditor({
 
           <Input
             type="hidden"
-            id="configId"
-            name="configId"
-            defaultValue={configId ?? ""}
+            id="configRef"
+            name="configRef"
+            defaultValue={configRef ?? ""}
           />
 
           <div className="space-y-3">

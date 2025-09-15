@@ -1,14 +1,23 @@
-import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
+import {
+  pgTable,
+  serial,
+  uuid,
+  varchar,
+  jsonb,
+  timestamp,
+} from "drizzle-orm/pg-core";
 import type { FieldObj } from "~/types";
 
-export const tbConfig = sqliteTable("tb_config", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  configId: text("config_id").unique().notNull(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  fields: text("fields", { mode: "json" }).notNull().$type<FieldObj[]>(),
-  schema: text("schema", { mode: "json" }).notNull().$type<object>(),
+export const tbConfig = pgTable("tb_config", {
+  id: serial("id").primaryKey(),
+  configRef: uuid("config_ref").defaultRandom().unique().notNull(),
+  title: varchar("title").notNull(),
+  description: varchar("description").notNull(),
+  fields: jsonb("fields").$type<FieldObj[]>().notNull(),
+  ajvSchema: jsonb("ajv_schema").$type<Record<string, any>>().notNull(),
+  createdOn: timestamp("created_on", { mode: "string" }).defaultNow().notNull(),
+  updatedOn: timestamp("updated_on", { mode: "string" }),
 });
 
-export type InsertConfig = typeof tbConfig.$inferInsert;
 export type SelectConfig = typeof tbConfig.$inferSelect;
+export type InsertConfig = typeof tbConfig.$inferInsert;

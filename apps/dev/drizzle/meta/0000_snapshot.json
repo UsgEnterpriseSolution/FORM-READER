@@ -1,127 +1,140 @@
 {
-  "version": "6",
-  "dialect": "sqlite",
-  "id": "b3d7dc28-9d3f-49dd-b79b-1d93ef74b18f",
+  "id": "8ffd3d24-7147-448a-9484-43f87f42157f",
   "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
   "tables": {
-    "tb_config": {
+    "public.tb_config": {
       "name": "tb_config",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
+          "notNull": true
         },
-        "config_id": {
-          "name": "config_id",
-          "type": "text",
+        "config_ref": {
+          "name": "config_ref",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "default": "gen_random_uuid()"
         },
         "title": {
           "name": "title",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "description": {
           "name": "description",
-          "type": "text",
+          "type": "varchar",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
         "fields": {
           "name": "fields",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "schema": {
-          "name": "schema",
-          "type": "text",
+        "ajv_schema": {
+          "name": "ajv_schema",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_on": {
+          "name": "created_on",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "default": "now()"
+        },
+        "updated_on": {
+          "name": "updated_on",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         }
       },
-      "indexes": {
-        "tb_config_config_id_unique": {
-          "name": "tb_config_config_id_unique",
-          "columns": [
-            "config_id"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
+      "uniqueConstraints": {
+        "tb_config_config_ref_unique": {
+          "name": "tb_config_config_ref_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "config_ref"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
-    "tb_data": {
+    "public.tb_data": {
       "name": "tb_data",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "integer",
+          "type": "serial",
           "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
+          "notNull": true
         },
-        "data_id": {
-          "name": "data_id",
-          "type": "text",
+        "data_ref": {
+          "name": "data_ref",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "default": "gen_random_uuid()"
         },
-        "config_id": {
-          "name": "config_id",
-          "type": "text",
+        "config_ref": {
+          "name": "config_ref",
+          "type": "uuid",
           "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "branch_code": {
+          "name": "branch_code",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
         },
         "data": {
           "name": "data",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
+          "notNull": true
         },
-        "date_extracted": {
-          "name": "date_extracted",
-          "type": "text",
+        "created_on": {
+          "name": "created_on",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "default": "now()"
         }
       },
-      "indexes": {
-        "tb_data_data_id_unique": {
-          "name": "tb_data_data_id_unique",
-          "columns": [
-            "data_id"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
-        "tb_data_config_id_tb_config_config_id_fk": {
-          "name": "tb_data_config_id_tb_config_config_id_fk",
+        "tb_data_config_ref_tb_config_config_ref_fk": {
+          "name": "tb_data_config_ref_tb_config_config_ref_fk",
           "tableFrom": "tb_data",
           "tableTo": "tb_config",
           "columnsFrom": [
-            "config_id"
+            "config_ref"
           ],
           "columnsTo": [
-            "config_id"
+            "config_ref"
           ],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -129,17 +142,20 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {}
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
-  "views": {},
   "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "internal": {
-    "indexes": {}
+    "tables": {}
   }
 }

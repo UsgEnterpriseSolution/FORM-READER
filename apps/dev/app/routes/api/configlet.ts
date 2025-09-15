@@ -6,9 +6,9 @@ export async function loader({
   params,
 }: Route.LoaderArgs): Promise<AppResponse<ConfigObj>> {
   try {
-    const { configId } = params;
+    const { configRef } = params;
 
-    const isValid = await Config.isValidConfigId(configId);
+    const isValid = await Config.isValid(configRef);
     if (!isValid) {
       return {
         status: "fail",
@@ -17,7 +17,7 @@ export async function loader({
       };
     }
 
-    const config = await Config.get(configId);
+    const config = await Config.get(configRef);
     if (!config) {
       return {
         status: "fail",

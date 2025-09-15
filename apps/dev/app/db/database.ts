@@ -1,4 +1,5 @@
-import "dotenv/config";
-import { drizzle } from "drizzle-orm/libsql";
+import { drizzle } from "drizzle-orm/node-postgres";
 
-export const db = drizzle(process.env.DB_FILE_NAME!);
+import "dotenv/config";
+
+export const db = drizzle(process.env.DATABASE_URL as string);

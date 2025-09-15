@@ -17,7 +17,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
   state: {
     settings: {
       engine: null,
-      configId: null,
+      configRef: null,
     },
     config: {
       loading: false,
@@ -38,11 +38,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       }));
     },
-    setConfigId: (configId) => {
+    setconfigRef: (configRef) => {
       set((store) => ({
         state: {
           ...store.state,
-          settings: { ...store.state.settings, configId },
+          settings: { ...store.state.settings, configRef },
         },
       }));
     },
@@ -174,12 +174,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       }));
     },
-    fetchConfiglet: async (configId) => {
+    fetchConfiglet: async (configRef) => {
       const store = get();
       store.actions.setConfigLoading(true);
       try {
         const res = await fetch(
-          `/api/configlet/${encodeURIComponent(configId)}`,
+          `/api/configlet/${encodeURIComponent(configRef)}`,
         );
 
         const payload = await res.json();
@@ -206,7 +206,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
         set((store) => ({
           state: {
             ...store.state,
-            settings: { ...store.state.settings, configId },
+            settings: { ...store.state.settings, configRef },
             config: {
               ...store.state.config,
               mode: "EDIT",
@@ -240,9 +240,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       }));
     },
-    fetchDataLog: async (dataId) => {
+    fetchDataLog: async (dataRef) => {
       try {
-        const res = await fetch(`/api/datalog/${dataId}`);
+        const res = await fetch(`/api/datalog/${dataRef}`);
 
         if (!res.ok) {
           throw new Error("Unable to retrieve data log.");

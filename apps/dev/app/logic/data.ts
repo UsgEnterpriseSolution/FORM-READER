@@ -1,5 +1,3 @@
-import crypto from "node:crypto";
-
 import { db } from "~/db/database";
 import Config from "./config";
 import { tbData } from "~/db/schema/tbData";
@@ -10,9 +8,9 @@ type Submission = {
 };
 
 class Data {
-  public static async parse(configId: string, submission: Submission) {
+  public static async parse(configRef: string, submission: Submission) {
     try {
-      const config = await Config.get(configId);
+      const config = await Config.get(configRef);
 
       if (config === null) {
         throw new Error("Invalid config ID");
@@ -45,15 +43,15 @@ class Data {
     }
   }
 
-  public static async insert(configId: string, data: { [k: string]: any }) {
+  public static async insert(configRef: string, data: { [k: string]: any }) {
     try {
       const result = await db
         .insert(tbData)
         .values({
-          dataId: crypto.randomUUID(),
-          configId,
+          configRef,
           data,
-          date_extracted: new Date().toISOString(),
+          username: "edwin_martinson",
+          branchCode: "007",
         })
         .returning();
 
@@ -67,12 +65,12 @@ class Data {
     }
   }
 
-  public static async getAll() {
+  public static async all() {
     try {
       const result = await db
         .select()
         .from(tbData)
-        .orderBy(desc(tbData.date_extracted));
+        .orderBy(desc(tbData.createdOn));
 
       return result.length > 0 ? result : null;
     } catch (error) {
@@ -83,12 +81,12 @@ class Data {
       return null;
     }
   }
-  public static async get(dataId: string) {
+  public static async get(dataRef: string) {
     try {
       const result = await db
         .select()
         .from(tbData)
-        .where(eq(tbData.dataId, dataId))
+        .where(eq(tbData.dataRef, dataRef))
         .limit(1);
 
       return result.length > 0 ? result[0] : null;
@@ -101,12 +99,12 @@ class Data {
     }
   }
 
-  public static async isValidId(id: string) {
+  public static async isValid(dataRef: string) {
     try {
       const result = await db
         .select()
         .from(tbData)
-        .where(eq(tbData.dataId, id))
+        .where(eq(tbData.dataRef, dataRef))
         .limit(1);
 
       return result.length > 0;

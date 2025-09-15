@@ -24,7 +24,7 @@ export default function NavMenu() {
           Config
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={() => navigate(href("/data/:dataId?"))}>
+        <DropdownMenuItem onClick={() => navigate(href("/data/:dataRef?"))}>
           Data logs
         </DropdownMenuItem>
       </DropdownMenuContent>

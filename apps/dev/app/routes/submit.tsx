@@ -12,13 +12,13 @@ export async function loader({
   params,
 }: Route.LoaderArgs): Promise<AppResponse<string> | Response> {
   try {
-    const dataId = params.dataId;
+    const dataRef = params.dataRef;
 
-    if (!dataId) {
+    if (!dataRef) {
       return redirect(href("/"));
     }
 
-    const isValid = await Data.isValidId(dataId);
+    const isValid = await Data.isValid(dataRef);
     console.log("isValid", isValid);
     if (!isValid) {
       return {
@@ -31,7 +31,7 @@ export async function loader({
     return {
       status: "success",
       message: "Data submitted successfully",
-      data: dataId,
+      data: dataRef,
       timestamp: Date.now(),
     };
   } catch (error) {
@@ -88,7 +88,7 @@ export default function Submit({ params, loaderData }: Route.ComponentProps) {
         <p className="text-muted-foreground text-sm">{loaderData?.message}</p>
       </div>
 
-      <CopyField value={params.dataId ?? ""} />
+      <CopyField value={params.dataRef ?? ""} />
 
       <div className="flex gap-2">
         <Button variant="outline" onClick={handleNewDoc}>

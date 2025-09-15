@@ -18,7 +18,7 @@ import DataLogSearch from "~/components/DataLogSearch";
 
 export async function loader(): Promise<AppResponse<DataLog[]> | Response> {
   try {
-    const data = await Data.getAll();
+    const data = await Data.all();
     if (!data) {
       return {
         status: "fail",
@@ -29,14 +29,14 @@ export async function loader(): Promise<AppResponse<DataLog[]> | Response> {
 
     const dataLogs: DataLog[] = [];
     for (const dataLog of data) {
-      const configId = dataLog.configId;
-      if (!configId) continue;
+      const configRef = dataLog.configRef;
+      if (!configRef) continue;
 
       dataLogs.push({
         id: dataLog.id,
-        dataId: dataLog.dataId,
-        formTitle: (await Config.title(configId)) ?? configId,
-        extDate: dataLog.date_extracted,
+        dataRef: dataLog.dataRef,
+        formTitle: (await Config.title(configRef)) ?? configRef,
+        extDate: dataLog.createdOn,
         data: dataLog.data as { [k: PropertyKey]: any },
       });
     }
@@ -78,11 +78,11 @@ export default function Component({ loaderData }: Route.ComponentProps) {
           {loaderData &&
             loaderData.status === "success" &&
             loaderData.data.map((item) => (
-              <TableRow key={item.dataId}>
+              <TableRow key={item.dataRef}>
                 <TableCell className="max-w-[100px]">
                   {formateDate(item.extDate)}
                 </TableCell>
-                <TableCell className="truncate">{item.dataId}</TableCell>
+                <TableCell className="truncate">{item.dataRef}</TableCell>
                 <TableCell className="truncate">{item.formTitle}</TableCell>
                 <TableCell>
                   <span className="space-x-2">
@@ -91,7 +91,7 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                     </Button>
 
                     <DataLogViewer
-                      dataId={item.dataId}
+                      dataRef={item.dataRef}
                       formTitle={item.formTitle}
                       extDate={item.extDate}
                       data={item.data}

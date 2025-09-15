@@ -5,7 +5,7 @@ import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 
 import type { ColumnField } from "~/types";
-import { useActions } from "~/zustand/store";
+import { useActions } from "~/zustand";
 
 type Props = {
   fieldId: string;

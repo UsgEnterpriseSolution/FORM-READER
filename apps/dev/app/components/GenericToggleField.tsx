@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useActions } from "~/zustand/store";
+import { useActions } from "~/zustand";
 
 type Props = {
   fieldId: string;

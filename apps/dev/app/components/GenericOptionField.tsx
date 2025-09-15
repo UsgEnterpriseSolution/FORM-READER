@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useActions } from "~/zustand/store";
+import { useActions } from "~/zustand";
 import { useRef } from "react";
 import { useAutoScrollOnAppend } from "~/hooks/useAutoScrollOnAppend";
 
