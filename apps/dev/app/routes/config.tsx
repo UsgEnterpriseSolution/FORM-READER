@@ -34,6 +34,7 @@ export async function action({
         const rawConfigZodObj = rawConfigSchema.safeParse({
           title: formData.get("title") as string,
           description: formData.get("description") as string,
+          endpoint: formData.get("endpoint") as string,
           fields: (formData.getAll("field") as string[]).map((field) =>
             JSON.parse(field),
           ),
@@ -86,6 +87,7 @@ export async function action({
         const rawConfigZodObj = rawConfigSchema.safeParse({
           title: formData.get("title") as string,
           description: formData.get("description") as string,
+          endpoint: formData.get("endpoint") as string,
           fields: (formData.getAll("field") as string[]).map((field) =>
             JSON.parse(field),
           ),

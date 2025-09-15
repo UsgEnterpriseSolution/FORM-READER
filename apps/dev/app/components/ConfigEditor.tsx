@@ -161,6 +161,19 @@ export default function ConfigEditor({
                 required
               />
             </Label>
+
+            <Label className="block space-y-2">
+              <p>Endpoint</p>
+              <Input
+                type="text"
+                id="endpoint"
+                name="endpoint"
+                placeholder="eg: localhost:8000/api/cbm"
+                defaultValue={details.endpoint ?? ""}
+                onChange={(e) => setConfigDetails("endpoint", e.target.value)}
+                required
+              />
+            </Label>
           </div>
 
           <Input

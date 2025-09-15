@@ -1,0 +1,20 @@
+[
+  {
+    "presetID": "PST100001",
+    "name": "New Employee Onboarding",
+    "keys": ["employeeId", "fullName", "startDate", "department", "jobTitle", "salary"],
+    "endpoint": "http://localhost:8080/api/hr/onboarding"
+  },
+  {
+    "presetID": "PST100002",
+    "name": "Time Off Request",
+    "keys": ["employeeId", "requestType", "startDate", "endDate", "reason"],
+    "endpoint": "http://localhost:8080/api/hr/timeoff"
+  },
+  {
+    "presetID": "PST100003",
+    "name": "Performance Review",
+    "keys": ["employeeId", "reviewerId", "reviewDate", "ratings", "comments", "goals"],
+    "endpoint": "http://localhost:8080/api/hr/performance"
+  }
+]

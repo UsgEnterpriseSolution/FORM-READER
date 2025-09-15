@@ -25,6 +25,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
       details: {
         title: null,
         description: null,
+        endpoint: null,
       },
       fields: [],
     },
@@ -157,6 +158,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
             details: {
               title: null,
               description: null,
+              endpoint: null,
             },
             fields: [],
           },
@@ -213,6 +215,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
               details: {
                 title: config.title ?? null,
                 description: config.description ?? null,
+                endpoint: config.endpoint ?? null,
               },
               fields: mappedFields,
             },

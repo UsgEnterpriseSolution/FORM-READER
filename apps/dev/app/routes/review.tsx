@@ -50,6 +50,15 @@ export async function action({
       };
     }
 
+    // const success = await Data.send(configRef, result.dataRef);
+    // if (!success) {
+    //   return {
+    //     status: "fail",
+    //     message: "Failed to send data",
+    //     timestamp: Date.now(),
+    //   };
+    // }
+
     return redirect(href("/submit/:dataRef", { dataRef: result.dataRef }));
   } catch (error) {
     return {

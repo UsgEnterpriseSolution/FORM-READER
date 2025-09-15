@@ -122,6 +122,7 @@ export type StoreState = {
     details: {
       title: string | null;
       description: string | null;
+      endpoint: string | null;
     };
     fields: {
       fieldId: string;
@@ -133,7 +134,10 @@ export type StoreState = {
 export type StoreActions = {
   setEngine: (engine: Engine) => void;
   setconfigRef: (configRef: string) => void;
-  setConfigDetails: (key: "title" | "description", value: string) => void;
+  setConfigDetails: (
+    key: "title" | "description" | "endpoint",
+    value: string,
+  ) => void;
   addConfigField: (type: ConfigFieldType) => void;
   removeConfigField: (fieldId: string) => void;
   updateConfigField: (fieldId: string, data: FieldObj) => void;

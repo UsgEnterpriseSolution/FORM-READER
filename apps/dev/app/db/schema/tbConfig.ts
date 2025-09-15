@@ -17,6 +17,7 @@ export const tbConfig = pgTable("tb_config", {
   ajvSchema: jsonb("ajv_schema").$type<Record<string, any>>().notNull(),
   createdOn: timestamp("created_on", { mode: "string" }).defaultNow().notNull(),
   updatedOn: timestamp("updated_on", { mode: "string" }),
+  endpoint: varchar("endpoint"),
 });
 
 export type SelectConfig = typeof tbConfig.$inferSelect;

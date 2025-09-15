@@ -68,6 +68,7 @@ export const configSchema = z.object({
   description: z.string(),
   fields: z.array(fieldSchema),
   ajvSchema: z.record(z.string(), z.any()),
+  endpoint: z.string().nullable(),
   createdOn: z.string(),
   updatedOn: z.string().nullable(),
 });
