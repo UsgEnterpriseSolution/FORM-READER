@@ -25,9 +25,9 @@ export async function action({
 
     const images: string[] = JSON.parse(formData.get("images") as string);
     const engine = formData.get("engine") as Engine;
-    const configId = formData.get("configId") as string;
+    const configRef = formData.get("configRef") as string;
 
-    const config = await Config.get(configId);
+    const config = await Config.get(configRef);
 
     if (config === null) {
       return {
@@ -37,10 +37,10 @@ export async function action({
       };
     }
 
-    const fieldData = await LLM.extract(engine, images, config.schema);
+    const fieldData = await LLM.extract(engine, images, config.ajvSchema);
 
     const cacheKey = crypto.randomUUID();
-    appCache.put(cacheKey, { configId, images, fieldData });
+    appCache.put(cacheKey, { configRef, images, fieldData });
 
     return redirect(href("/review/:key", { key: cacheKey }));
   } catch (error) {
@@ -55,7 +55,7 @@ export async function action({
 
 export async function loader(): Promise<AppResponse<UploadLoaderRes>> {
   try {
-    const configs = await Config.getAll();
+    const configs = await Config.all();
 
     if (configs === null) {
       throw new Error("Failed to load configs");
@@ -66,12 +66,13 @@ export async function loader(): Promise<AppResponse<UploadLoaderRes>> {
       data: {
         configs: configs.map((config) => ({
           label: config.title,
-          value: config.configId,
+          value: config.configRef,
         })),
         engines: [
-          { label: "(Online) - Google", value: "GOOGLE" },
-          { label: "(Local) - LM Studio", value: "LMSTUDIO" },
-          { label: "(Local) - Ollama", value: "OLLAMA" },
+          { label: "OpenAI", value: "OPENAI", isLocal: false },
+          { label: "Google", value: "GOOGLE", isLocal: false },
+          { label: "LM Studio", value: "LMSTUDIO", isLocal: true },
+          { label: "Ollama", value: "OLLAMA", isLocal: true },
         ],
       },
       timestamp: Date.now(),

@@ -1,6 +1,6 @@
 {
-  "id": "8ffd3d24-7147-448a-9484-43f87f42157f",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "e40c9e67-eb68-467a-9411-1426f41c0c24",
+  "prevId": "8ffd3d24-7147-448a-9484-43f87f42157f",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -55,6 +55,12 @@
         "updated_on": {
           "name": "updated_on",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endpoint": {
+          "name": "endpoint",
+          "type": "varchar",
           "primaryKey": false,
           "notNull": false
         }

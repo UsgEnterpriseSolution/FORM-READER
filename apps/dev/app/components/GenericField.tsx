@@ -11,7 +11,9 @@ import {
 } from "./ui/select";
 import { PhoneInput } from "./PhoneInput";
 import DateInput from "./ui/DateInput";
-import CheckboxGroup from "./ui/CheckboxGroup";
+import CheckboxInput from "./CheckboxInput";
+import RadioInput from "./RadioInput";
+import SwitchInput from "./SwitchInput";
 
 type GenericFieldProp = {
   field: FieldObj;
@@ -44,7 +46,7 @@ export default function GenericField({ field, data }: GenericFieldProp) {
             name={field.name}
             placeholder={field.placeholder}
             required={field.isRequired}
-            value={data[field.name]}
+            value={data[field.name] || field.defaultValue}
           />
         </div>
       );
@@ -56,7 +58,7 @@ export default function GenericField({ field, data }: GenericFieldProp) {
           <DateInput
             name={field.name}
             required={field.isRequired}
-            value={data[field.name]}
+            value={data[field.name] || field.defaultValue}
           />
         </div>
       );
@@ -69,7 +71,7 @@ export default function GenericField({ field, data }: GenericFieldProp) {
             name={field.name}
             placeholder={field.placeholder}
             required={field.isRequired}
-            defaultValue={JSON.stringify(data[field.name])}
+            defaultValue={data[field.name] || field.defaultValue}
           />
         </div>
       );
@@ -77,7 +79,10 @@ export default function GenericField({ field, data }: GenericFieldProp) {
     case "SELECT":
       return (
         <div className="space-y-2">
-          <Select name={field.name} defaultValue={data[field.name]}>
+          <Select
+            name={field.name}
+            defaultValue={data[field.name] || field.defaultValue}
+          >
             <Label className="block">{field.label}</Label>
             <SelectTrigger className="w-full">
               <SelectValue placeholder={field.placeholder} />
@@ -95,22 +100,38 @@ export default function GenericField({ field, data }: GenericFieldProp) {
 
     case "CHECKBOX":
       return (
-        <CheckboxGroup
+        <CheckboxInput
           label={field.label}
+          name={field.name}
+          placeholder={field.placeholder}
           options={field.options}
-          defaultOption={data[field.name]}
-          onChange={(values) => console.log(values)}
+          defaultOption={data[field.name] || field.defaultValue}
         />
       );
 
     case "RADIO":
-      return <p>Radio field</p>;
+      return (
+        <RadioInput
+          label={field.label}
+          name={field.name}
+          placeholder={field.placeholder}
+          options={field.options}
+          defaultOption={data[field.name] || field.defaultValue}
+          required={field.isRequired}
+        />
+      );
 
     case "TABLE":
       return <p>Table field</p>;
 
     case "SWITCH":
-      return <p>Switch field</p>;
+      return (
+        <SwitchInput
+          label={field.label}
+          name={field.name}
+          defaultValue={data[field.name] ?? field.defaultValue}
+        />
+      );
 
     default:
       return <p>Unknown field type</p>;

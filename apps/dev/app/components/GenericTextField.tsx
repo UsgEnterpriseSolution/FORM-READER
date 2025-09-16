@@ -1,13 +1,18 @@
-import { useState } from "react";
-
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Trash2 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 import type { TextField } from "~/types";
-import { useActions } from "~/zustand/store";
+import { useActions } from "~/zustand";
 
 type Props = {
   fieldId: string;
@@ -15,7 +20,8 @@ type Props = {
 };
 
 export default function GenericTextField({ fieldId, data }: Props) {
-  const { removeConfigField, updateConfigField } = useActions();
+  const { removeConfigField, updateConfigField, updateConfigFieldType } =
+    useActions();
 
   const handleChange = (key: keyof TextField, value: any) => {
     updateConfigField(fieldId, { ...data, [key]: value });
@@ -44,7 +50,36 @@ export default function GenericTextField({ fieldId, data }: Props) {
       <input type="hidden" name="field" value={JSON.stringify(data)} />
 
       <Label className="block space-y-2">
-        <p>
+        <p className="text-muted-foreground">
+          Field <span className="text-red-500">*</span>
+        </p>
+        <Select
+          name="type"
+          value={data.type}
+          onValueChange={(v) => updateConfigFieldType(fieldId, v)}
+          required
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select field" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="TEXT">Text</SelectItem>
+            <SelectItem value="NUMBER">Number</SelectItem>
+            <SelectItem value="DATE">Date</SelectItem>
+            <SelectItem value="EMAIL">Email</SelectItem>
+            <SelectItem value="PHONE">Phone</SelectItem>
+            <SelectItem value="TEXTAREA">Textarea</SelectItem>
+            <SelectItem value="SELECT">Select</SelectItem>
+            <SelectItem value="CHECKBOX">Checkbox</SelectItem>
+            <SelectItem value="RADIO">Radio</SelectItem>
+            <SelectItem value="TABLE">Table</SelectItem>
+            <SelectItem value="SWITCH">Switch</SelectItem>
+          </SelectContent>
+        </Select>
+      </Label>
+
+      <Label className="block space-y-2">
+        <p className="text-muted-foreground">
           Label <span className="text-red-500">*</span>
         </p>
         <Input
@@ -57,8 +92,8 @@ export default function GenericTextField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          Name <span className="text-red-500">*</span>
+        <p className="text-muted-foreground">
+          Key <span className="text-red-500">*</span>
         </p>
         <Input
           type="text"
@@ -70,9 +105,7 @@ export default function GenericTextField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          Placeholder <span className="text-muted-foreground">(Optional)</span>
-        </p>
+        <p className="text-muted-foreground">Placeholder</p>
         <Input
           type="text"
           placeholder="eg: dd/mm/yyyy"
@@ -82,10 +115,7 @@ export default function GenericTextField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          Default value{" "}
-          <span className="text-muted-foreground">(Optional)</span>
-        </p>
+        <p className="text-muted-foreground">Default value</p>
         <Input
           type="text"
           placeholder="eg: 22/08/2025"
@@ -95,9 +125,7 @@ export default function GenericTextField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          RegExp <span className="text-muted-foreground">(Optional)</span>
-        </p>
+        <p className="text-muted-foreground">RegExp</p>
         <Input
           type="text"
           placeholder="eg: /^[^\s@]+@[^\s@]+\.[^\s@]+$/"

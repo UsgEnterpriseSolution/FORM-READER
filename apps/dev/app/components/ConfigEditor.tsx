@@ -30,17 +30,17 @@ import {
   useConfigFields,
   useConfigLoading,
   useConfigMode,
-} from "~/zustand/store";
+} from "~/zustand";
 import { Loader2 } from "lucide-react";
 
 type ConfigEditorProps = {
   children: React.ReactNode;
-  configId?: string;
+  configRef?: string;
 };
 
 export default function ConfigEditor({
   children,
-  configId,
+  configRef,
 }: ConfigEditorProps) {
   const actionData = useActionData<AppResponse<any>>();
   const { state } = useNavigation();
@@ -136,7 +136,7 @@ export default function ConfigEditor({
         >
           <div className="space-y-3">
             <Label className="block space-y-2">
-              <p>Title</p>
+              <p className="text-muted-foreground">Title</p>
               <Input
                 type="text"
                 id="title"
@@ -149,7 +149,7 @@ export default function ConfigEditor({
             </Label>
 
             <Label className="block space-y-2">
-              <p>Description</p>
+              <p className="text-muted-foreground">Description</p>
               <Textarea
                 id="description"
                 name="description"
@@ -161,13 +161,26 @@ export default function ConfigEditor({
                 required
               />
             </Label>
+
+            <Label className="block space-y-2">
+              <p className="text-muted-foreground">Endpoint</p>
+              <Input
+                type="text"
+                id="endpoint"
+                name="endpoint"
+                placeholder="eg: localhost:8000/api/cbm"
+                defaultValue={details.endpoint ?? ""}
+                onChange={(e) => setConfigDetails("endpoint", e.target.value)}
+                required
+              />
+            </Label>
           </div>
 
           <Input
             type="hidden"
-            id="configId"
-            name="configId"
-            defaultValue={configId ?? ""}
+            id="configRef"
+            name="configRef"
+            defaultValue={configRef ?? ""}
           />
 
           <div className="space-y-3">

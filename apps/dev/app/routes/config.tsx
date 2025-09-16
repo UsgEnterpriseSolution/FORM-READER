@@ -18,8 +18,9 @@ import { rawConfigSchema } from "~/zod";
 import useAppToast from "~/hooks/useAppToast";
 import ConfigDeleteModal from "~/components/ConfigDeleteModal";
 import { useNavigation } from "react-router";
-import { useActions, useConfigMode } from "~/zustand/store";
+import { useActions, useConfigMode } from "~/zustand";
 import ConfigViewer from "~/components/ConfigViewer";
+import { formateDate } from "~/utils/functions";
 
 export async function action({
   request,
@@ -33,6 +34,7 @@ export async function action({
         const rawConfigZodObj = rawConfigSchema.safeParse({
           title: formData.get("title") as string,
           description: formData.get("description") as string,
+          endpoint: formData.get("endpoint") as string,
           fields: (formData.getAll("field") as string[]).map((field) =>
             JSON.parse(field),
           ),
@@ -46,7 +48,7 @@ export async function action({
           };
         }
 
-        const result = await Config.createBeta(rawConfigZodObj.data);
+        const result = await Config.create(rawConfigZodObj.data);
         if (!result) {
           return {
             status: "fail",
@@ -64,8 +66,8 @@ export async function action({
       }
 
       case "PUT": {
-        const configId = formData.get("configId") as string | null;
-        if (!configId) {
+        const configRef = formData.get("configRef") as string | null;
+        if (!configRef) {
           return {
             status: "fail",
             message: "Invalid config ID.",
@@ -73,7 +75,7 @@ export async function action({
           };
         }
 
-        const isValid = await Config.isValidConfigId(configId);
+        const isValid = await Config.isValid(configRef);
         if (!isValid) {
           return {
             status: "fail",
@@ -85,6 +87,7 @@ export async function action({
         const rawConfigZodObj = rawConfigSchema.safeParse({
           title: formData.get("title") as string,
           description: formData.get("description") as string,
+          endpoint: formData.get("endpoint") as string,
           fields: (formData.getAll("field") as string[]).map((field) =>
             JSON.parse(field),
           ),
@@ -98,7 +101,7 @@ export async function action({
           };
         }
 
-        const result = await Config.updateBeta(configId, rawConfigZodObj.data);
+        const result = await Config.update(configRef, rawConfigZodObj.data);
         if (!result) {
           return {
             status: "fail",
@@ -116,9 +119,9 @@ export async function action({
       }
 
       case "DELETE": {
-        const configId = formData.get("configId") as string;
+        const configRef = formData.get("configRef") as string;
 
-        if (!configId) {
+        if (!configRef) {
           return {
             status: "fail",
             message: "Invalid config ID.",
@@ -126,7 +129,7 @@ export async function action({
           };
         }
 
-        const isValid = await Config.isValidConfigId(configId);
+        const isValid = await Config.isValid(configRef);
         if (!isValid) {
           return {
             status: "fail",
@@ -135,7 +138,7 @@ export async function action({
           };
         }
 
-        const success = await Config.remove(configId);
+        const success = await Config.remove(configRef);
         if (!success) {
           return {
             status: "fail",
@@ -172,7 +175,7 @@ export async function action({
 
 export async function loader(): Promise<AppResponse<ConfigLoaderRes>> {
   try {
-    const configs = await Config.getAll();
+    const configs = await Config.all();
 
     if (configs === null) {
       throw new Error("Failed to load configs");
@@ -181,10 +184,10 @@ export async function loader(): Promise<AppResponse<ConfigLoaderRes>> {
     return {
       status: "success",
       data: configs.map((config) => ({
-        configId: config.configId,
+        configRef: config.configRef,
         title: config.title,
         description: config.description,
-        lastUpdated: "00/00/2025",
+        lastUpdated: config.updatedOn ?? "---",
       })),
       timestamp: Date.now(),
     };
@@ -214,16 +217,16 @@ export default function Component({
     setConfigMode("CREATE");
   };
 
-  const handleEdit = (configId: string) => {
+  const handleEdit = (configRef: string) => {
     resetConfig();
     setConfigMode("EDIT");
-    fetchConfiglet(configId);
+    fetchConfiglet(configRef);
   };
 
-  const handleView = (configId: string) => {
+  const handleView = (configRef: string) => {
     resetConfig();
     setConfigMode("VIEW");
-    fetchConfiglet(configId);
+    fetchConfiglet(configRef);
   };
 
   useAppToast<any>(actionData);
@@ -258,43 +261,43 @@ export default function Component({
         <TableBody>
           {loaderData.status === "success" &&
             loaderData.data.map((config, index) => (
-              <TableRow key={config.configId}>
+              <TableRow key={config.configRef}>
                 <TableCell>
                   <div className="bg-primary text-secondary grid size-8 place-content-center rounded-full">
                     {index + 1}
                   </div>
                 </TableCell>
                 <TableCell className="max-w-[192px] truncate">
-                  {config.configId}
+                  {config.configRef}
                 </TableCell>
                 <TableCell>{config.title}</TableCell>
                 <TableCell className="max-w-[312px]">
                   {config.description}
                 </TableCell>
-                <TableCell>{config.lastUpdated}</TableCell>
+                <TableCell>{formateDate(config.lastUpdated)}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">
                     <ConfigViewer>
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => handleView(config.configId)}
+                        onClick={() => handleView(config.configRef)}
                       >
                         <Eye />
                       </Button>
                     </ConfigViewer>
 
-                    <ConfigEditor configId={config.configId}>
+                    <ConfigEditor configRef={config.configRef}>
                       <Button
                         variant="outline"
                         size="icon"
-                        onClick={() => handleEdit(config.configId)}
+                        onClick={() => handleEdit(config.configRef)}
                       >
                         <Pencil />
                       </Button>
                     </ConfigEditor>
 
-                    <ConfigDeleteModal configId={config.configId}>
+                    <ConfigDeleteModal configRef={config.configRef}>
                       <Button variant="destructive" size="icon">
                         <Trash2 />
                       </Button>

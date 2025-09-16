@@ -15,7 +15,7 @@ import {
   useConfigFields,
   useConfigLoading,
   useConfigMode,
-} from "~/zustand/store";
+} from "~/zustand";
 import { Button } from "./ui/button";
 import GenericField from "./GenericField";
 import { Loader2 } from "lucide-react";

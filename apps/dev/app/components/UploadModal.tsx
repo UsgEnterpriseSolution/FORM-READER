@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useActions, useSettings } from "~/zustand/store";
+import { useActions, useSettings } from "~/zustand";
 import { Button } from "./ui/button";
 
 import { useLoaderData, useNavigation } from "react-router";
@@ -35,7 +35,7 @@ export default function UploadModal({}: ExtractModalProps) {
   const navigation = useNavigation();
   const isPageSubmitting = navigation.state === "submitting";
 
-  const { setEngine, setConfigId } = useActions();
+  const { setEngine, setconfigRef } = useActions();
   const settings = useSettings();
 
   return (
@@ -64,8 +64,8 @@ export default function UploadModal({}: ExtractModalProps) {
         </AlertDialogHeader>
 
         <Select
-          defaultValue={settings.configId === null ? "" : settings.configId}
-          onValueChange={setConfigId}
+          defaultValue={settings.configRef === null ? "" : settings.configRef}
+          onValueChange={setconfigRef}
         >
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select Form Type" />
@@ -92,13 +92,27 @@ export default function UploadModal({}: ExtractModalProps) {
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
-              <SelectLabel>Engines</SelectLabel>
+              <SelectLabel>Online</SelectLabel>
               {loaderData.status === "success" &&
-                loaderData.data.engines.map((engine, index) => (
-                  <SelectItem key={index} value={engine.value}>
-                    {engine.label}
-                  </SelectItem>
-                ))}
+                loaderData.data.engines
+                  .filter((item) => item.isLocal === false)
+                  .map((engine, index) => (
+                    <SelectItem key={index} value={engine.value}>
+                      {engine.label}
+                    </SelectItem>
+                  ))}
+            </SelectGroup>
+
+            <SelectGroup>
+              <SelectLabel>Local</SelectLabel>
+              {loaderData.status === "success" &&
+                loaderData.data.engines
+                  .filter((item) => item.isLocal)
+                  .map((engine, index) => (
+                    <SelectItem key={index} value={engine.value}>
+                      {engine.label}
+                    </SelectItem>
+                  ))}
             </SelectGroup>
           </SelectContent>
         </Select>
@@ -109,7 +123,7 @@ export default function UploadModal({}: ExtractModalProps) {
           <AlertDialogAction
             type="submit"
             form="image-form"
-            disabled={!settings.configId || !settings.engine}
+            disabled={!settings.configRef || !settings.engine}
           >
             <span>Proceed</span>
             <CircleChevronRight />

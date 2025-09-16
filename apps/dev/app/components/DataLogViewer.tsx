@@ -16,7 +16,7 @@ import { Table, TableBody, TableCell, TableRow } from "./ui/table";
 type DataLogViewerProps = {
   open?: boolean;
   children?: React.ReactNode;
-  dataId: string;
+  dataRef: string;
   formTitle: string;
   extDate: string;
   data: { [k: PropertyKey]: any };

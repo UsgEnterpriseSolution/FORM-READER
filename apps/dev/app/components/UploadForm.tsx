@@ -9,7 +9,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { useEffect, useState } from "react";
 import { convertToDataUrl } from "~/utils/functions";
-import { useSettings } from "~/zustand/store";
+import { useSettings } from "~/zustand";
 
 type UploadFormProps = {
   actions: FileUploadActions;
@@ -59,8 +59,8 @@ export default function UploadForm({
       <input type="hidden" name="images" value={imgUrls} />
       <input
         type="hidden"
-        name="configId"
-        value={settings.configId === null ? "" : settings.configId}
+        name="configRef"
+        value={settings.configRef === null ? "" : settings.configRef}
       />
       <input
         type="hidden"

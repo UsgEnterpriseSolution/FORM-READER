@@ -21,8 +21,8 @@ export async function action({
   const submission = Object.fromEntries(formData);
 
   try {
-    const configId = submission["configId"] as string;
-    const isValid = await Config.isValidConfigId(configId);
+    const configRef = submission["configRef"] as string;
+    const isValid = await Config.isValid(configRef);
 
     if (!isValid) {
       return {
@@ -32,7 +32,7 @@ export async function action({
       };
     }
 
-    const data = await Data.parse(configId, submission);
+    const data = await Data.parse(configRef, submission);
     if (data === null) {
       return {
         status: "fail",
@@ -41,7 +41,16 @@ export async function action({
       };
     }
 
-    const result = await Data.insert(configId, data);
+    const success = await Data.send(configRef, data);
+    if (!success) {
+      return {
+        status: "fail",
+        message: "Failed to send data",
+        timestamp: Date.now(),
+      };
+    }
+
+    const result = await Data.insert(configRef, data);
     if (result === null) {
       return {
         status: "fail",
@@ -50,7 +59,7 @@ export async function action({
       };
     }
 
-    return redirect(href("/submit/:dataId", { dataId: result.dataId }));
+    return redirect(href("/submit/:dataRef", { dataRef: result.dataRef }));
   } catch (error) {
     return {
       code: 500,
@@ -77,7 +86,7 @@ export async function loader({
       message: "Image(s) processed successfully.",
       data: {
         images: cacheData.images,
-        config: await Config.get(cacheData.configId),
+        config: await Config.get(cacheData.configRef),
         fieldData: cacheData.fieldData,
       },
       timestamp: Date.now(),

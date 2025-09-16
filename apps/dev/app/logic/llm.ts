@@ -1,5 +1,6 @@
 import { google } from "@ai-sdk/google";
 import { ollama } from "ollama-ai-provider";
+import { openai } from "@ai-sdk/openai";
 import { Chat, LMStudioClient } from "@lmstudio/sdk";
 import { generateObject, jsonSchema, type CoreMessage } from "ai";
 // import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
@@ -31,6 +32,28 @@ class LLM {
   ): Promise<any> {
     const { object } = await generateObject({
       model: google("gemini-2.5-flash"),
+      system: this.system,
+      schema: jsonSchema(schema),
+      messages: [
+        {
+          role: "user",
+          content: images.map((image) => ({
+            type: "image",
+            image: image,
+          })),
+        },
+      ],
+    });
+
+    return object;
+  }
+
+  private static async askOpenAI(
+    images: string[],
+    schema: object,
+  ): Promise<any> {
+    const { object } = await generateObject({
+      model: openai("gpt-5-nano"),
       system: this.system,
       schema: jsonSchema(schema),
       messages: [
@@ -121,6 +144,8 @@ class LLM {
         return await this.askOllama(images, schema);
       case "GOOGLE":
         return await this.askGoogle(images, schema);
+      case "OPENAI":
+        return await this.askOpenAI(images, schema);
       default:
         throw new Error("Invalid flag");
     }

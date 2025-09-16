@@ -11,7 +11,7 @@ import {
   textFieldSchema,
   toggleFieldSchema,
 } from "~/zod";
-import { useConfigField } from "~/zustand/store";
+import { useConfigField } from "~/zustand";
 
 type GenericFieldConfigProps = {
   fieldId: string;
