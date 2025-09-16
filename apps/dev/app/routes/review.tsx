@@ -41,6 +41,15 @@ export async function action({
       };
     }
 
+    const success = await Data.send(configRef, data);
+    if (!success) {
+      return {
+        status: "fail",
+        message: "Failed to send data",
+        timestamp: Date.now(),
+      };
+    }
+
     const result = await Data.insert(configRef, data);
     if (result === null) {
       return {
@@ -49,15 +58,6 @@ export async function action({
         timestamp: Date.now(),
       };
     }
-
-    // const success = await Data.send(configRef, result.dataRef);
-    // if (!success) {
-    //   return {
-    //     status: "fail",
-    //     message: "Failed to send data",
-    //     timestamp: Date.now(),
-    //   };
-    // }
 
     return redirect(href("/submit/:dataRef", { dataRef: result.dataRef }));
   } catch (error) {

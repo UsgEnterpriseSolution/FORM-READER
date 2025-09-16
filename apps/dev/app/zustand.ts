@@ -1,12 +1,58 @@
 import { nanoid } from "nanoid";
 import { create } from "zustand";
-import type { ConfigObj, FieldObj, StoreActions, StoreState } from "~/types";
+import type {
+  AppResponse,
+  ConfigFieldType,
+  ConfigObj,
+  DataLog,
+  Engine,
+  FieldObj,
+} from "~/types";
 import {
   columnFieldTypeSchema,
   optionFieldTypeSchema,
   textFieldTypeSchema,
   toggleFieldTypeSchema,
 } from "~/zod";
+
+export type StoreState = {
+  settings: {
+    engine: Engine | null;
+    configRef: string | null;
+  };
+  config: {
+    loading: boolean;
+    mode: "CREATE" | "EDIT" | "VIEW";
+    details: {
+      title: string | null;
+      description: string | null;
+      endpoint: string | null;
+    };
+    fields: {
+      fieldId: string;
+      data: FieldObj;
+    }[];
+  };
+};
+
+export type StoreActions = {
+  setEngine: (engine: Engine) => void;
+  setconfigRef: (configRef: string) => void;
+  setConfigDetails: (
+    key: "title" | "description" | "endpoint",
+    value: string,
+  ) => void;
+  getDefaultFieldData: (type: ConfigFieldType) => FieldObj;
+  addConfigField: (type: ConfigFieldType) => void;
+  removeConfigField: (fieldId: string) => void;
+  updateConfigField: (fieldId: string, data: FieldObj) => void;
+  updateConfigFieldType: (fieldId: string, type: string) => void;
+  resetConfig: () => void;
+  setConfigMode: (mode: "CREATE" | "EDIT" | "VIEW") => void;
+  fetchConfiglet: (configRef: string) => Promise<void>;
+  setConfigLoading: (state: boolean) => void;
+  fetchDataLog: (dataRef: string) => Promise<AppResponse<DataLog>>;
+};
 
 type AppStore = {
   state: StoreState;
@@ -62,56 +108,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
       }));
     },
     addConfigField: (type) => {
-      const textZodObj = textFieldTypeSchema.safeParse(type);
-      const optionZodObj = optionFieldTypeSchema.safeParse(type);
-      const columnZodObj = columnFieldTypeSchema.safeParse(type);
-      const toggleZodObj = toggleFieldTypeSchema.safeParse(type);
-
-      let fieldId = nanoid();
-      let data: FieldObj;
-
-      if (textZodObj.success) {
-        data = {
-          type: textZodObj.data,
-          label: "New Field",
-          name: "",
-          placeholder: "",
-          defaultValue: "",
-          regExp: "",
-          isRequired: false,
-        };
-      }
-
-      if (optionZodObj.success) {
-        data = {
-          type: optionZodObj.data,
-          label: "New Field",
-          name: "",
-          placeholder: "",
-          defaultValue: "",
-          options: [],
-          isRequired: false,
-        };
-      }
-
-      if (columnZodObj.success) {
-        data = {
-          type: columnZodObj.data,
-          label: "New Field",
-          name: "",
-          columns: [],
-        };
-      }
-
-      if (toggleZodObj.success) {
-        data = {
-          type: toggleZodObj.data,
-          label: "New Field",
-          name: "",
-          placeholder: "",
-          defaultValue: false,
-        };
-      }
+      const store = get();
+      const fieldId = nanoid();
+      const data = store.actions.getDefaultFieldData(type);
 
       set((store) => ({
         state: {
@@ -149,6 +148,12 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       }));
     },
+    updateConfigFieldType: (fieldId, type) => {
+      const store = get();
+      const data = store.actions.getDefaultFieldData(type as ConfigFieldType);
+
+      store.actions.updateConfigField(fieldId, data);
+    },
     resetConfig: () => {
       set((store) => ({
         state: {
@@ -183,24 +188,17 @@ export const useAppStore = create<AppStore>((set, get) => ({
         const res = await fetch(
           `/api/configlet/${encodeURIComponent(configRef)}`,
         );
-
-        const payload = await res.json();
-
         if (!res.ok) {
-          // backend may still return a JSON body with a message
-          const msg =
-            payload?.message || res.statusText || "Unable to load config.";
-          throw new Error(msg);
+          throw new Error("Failed to load config.");
         }
 
+        const payload = await res.json();
         if (payload?.status !== "success") {
-          const msg = payload?.message || "Failed to load config.";
-          throw new Error(msg);
+          throw new Error(payload.message);
         }
 
         const config: ConfigObj = payload.data;
 
-        // map incoming fields (FieldObj[]) to store shape { fieldId, data }
         const mappedFields = Array.isArray(config.fields)
           ? config.fields.map((f) => ({ fieldId: nanoid(), data: f }))
           : [];
@@ -222,7 +220,6 @@ export const useAppStore = create<AppStore>((set, get) => ({
           },
         }));
       } catch (error) {
-        // keep behavior simple: log error. callers/components can show toast if needed.
         // eslint-disable-next-line no-console
         console.error(
           "fetchConfiglet error:",
@@ -255,6 +252,57 @@ export const useAppStore = create<AppStore>((set, get) => ({
       } catch (error) {
         throw error;
       }
+    },
+    getDefaultFieldData: (type) => {
+      const textZodObj = textFieldTypeSchema.safeParse(type);
+      const optionZodObj = optionFieldTypeSchema.safeParse(type);
+      const columnZodObj = columnFieldTypeSchema.safeParse(type);
+      const toggleZodObj = toggleFieldTypeSchema.safeParse(type);
+
+      if (textZodObj.success) {
+        return {
+          type: textZodObj.data,
+          label: "New Field",
+          name: "",
+          placeholder: "",
+          defaultValue: "",
+          regExp: "",
+          isRequired: false,
+        };
+      }
+
+      if (optionZodObj.success) {
+        return {
+          type: optionZodObj.data,
+          label: "New Field",
+          name: "",
+          placeholder: "",
+          defaultValue: "",
+          options: [],
+          isRequired: false,
+        };
+      }
+
+      if (columnZodObj.success) {
+        return {
+          type: columnZodObj.data,
+          label: "New Field",
+          name: "",
+          columns: [],
+        };
+      }
+
+      if (toggleZodObj.success) {
+        return {
+          type: toggleZodObj.data,
+          label: "New Field",
+          name: "",
+          placeholder: "",
+          defaultValue: false,
+        };
+      }
+
+      throw new Error("Invalid field type.");
     },
   },
 }));

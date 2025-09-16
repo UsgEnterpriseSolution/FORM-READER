@@ -19,7 +19,8 @@ type Props = {
 };
 
 export default function GenericToggleField({ fieldId, data }: Props) {
-  const { removeConfigField, updateConfigField } = useActions();
+  const { removeConfigField, updateConfigField, updateConfigFieldType } =
+    useActions();
 
   const handleChange = (key: keyof ToggleField, value: any) => {
     updateConfigField(fieldId, { ...data, [key]: value });
@@ -48,7 +49,36 @@ export default function GenericToggleField({ fieldId, data }: Props) {
       <input type="hidden" name="field" value={JSON.stringify(data)} />
 
       <Label className="block space-y-2">
-        <p>
+        <p className="text-muted-foreground">
+          Field <span className="text-red-500">*</span>
+        </p>
+        <Select
+          name="type"
+          value={data.type}
+          onValueChange={(v) => updateConfigFieldType(fieldId, v)}
+          required
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select field" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="TEXT">Text</SelectItem>
+            <SelectItem value="NUMBER">Number</SelectItem>
+            <SelectItem value="DATE">Date</SelectItem>
+            <SelectItem value="EMAIL">Email</SelectItem>
+            <SelectItem value="PHONE">Phone</SelectItem>
+            <SelectItem value="TEXTAREA">Textarea</SelectItem>
+            <SelectItem value="SELECT">Select</SelectItem>
+            <SelectItem value="CHECKBOX">Checkbox</SelectItem>
+            <SelectItem value="RADIO">Radio</SelectItem>
+            <SelectItem value="TABLE">Table</SelectItem>
+            <SelectItem value="SWITCH">Switch</SelectItem>
+          </SelectContent>
+        </Select>
+      </Label>
+
+      <Label className="block space-y-2">
+        <p className="text-muted-foreground">
           Label <span className="text-red-500">*</span>
         </p>
         <Input
@@ -61,8 +91,8 @@ export default function GenericToggleField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          Name <span className="text-red-500">*</span>
+        <p className="text-muted-foreground">
+          Key <span className="text-red-500">*</span>
         </p>
         <Input
           type="text"
@@ -74,7 +104,7 @@ export default function GenericToggleField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
+        <p className="text-muted-foreground">
           Default <span className="text-red-500">*</span>
         </p>
 

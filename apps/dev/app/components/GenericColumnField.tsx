@@ -3,6 +3,13 @@ import { Trash2, Plus } from "lucide-react";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 import type { ColumnField } from "~/types";
 import { useActions } from "~/zustand";
@@ -13,7 +20,8 @@ type Props = {
 };
 
 export default function GenericColumnField({ fieldId, data }: Props) {
-  const { removeConfigField, updateConfigField } = useActions();
+  const { removeConfigField, updateConfigField, updateConfigFieldType } =
+    useActions();
 
   const handleChange = (key: keyof ColumnField, value: any) => {
     updateConfigField(fieldId, { ...data, [key]: value });
@@ -64,7 +72,36 @@ export default function GenericColumnField({ fieldId, data }: Props) {
       <input type="hidden" name="field" value={JSON.stringify(data)} />
 
       <Label className="block space-y-2">
-        <p>
+        <p className="text-muted-foreground">
+          Field <span className="text-red-500">*</span>
+        </p>
+        <Select
+          name="type"
+          value={data.type}
+          onValueChange={(v) => updateConfigFieldType(fieldId, v)}
+          required
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select field" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="TEXT">Text</SelectItem>
+            <SelectItem value="NUMBER">Number</SelectItem>
+            <SelectItem value="DATE">Date</SelectItem>
+            <SelectItem value="EMAIL">Email</SelectItem>
+            <SelectItem value="PHONE">Phone</SelectItem>
+            <SelectItem value="TEXTAREA">Textarea</SelectItem>
+            <SelectItem value="SELECT">Select</SelectItem>
+            <SelectItem value="CHECKBOX">Checkbox</SelectItem>
+            <SelectItem value="RADIO">Radio</SelectItem>
+            <SelectItem value="TABLE">Table</SelectItem>
+            <SelectItem value="SWITCH">Switch</SelectItem>
+          </SelectContent>
+        </Select>
+      </Label>
+
+      <Label className="block space-y-2">
+        <p className="text-muted-foreground">
           Label <span className="text-red-500">*</span>
         </p>
         <Input
@@ -77,8 +114,8 @@ export default function GenericColumnField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          Name <span className="text-red-500">*</span>
+        <p className="text-muted-foreground">
+          Key <span className="text-red-500">*</span>
         </p>
         <Input
           type="text"
@@ -117,7 +154,7 @@ function FieldColumns({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <h6 className="text-sm font-medium">Columns</h6>
+        <h6 className="text-muted-foreground text-sm font-medium">Columns</h6>
         <Button type="button" variant={"outline"} size={"icon"} onClick={onAdd}>
           <Plus />
         </Button>
@@ -140,7 +177,7 @@ function FieldColumns({
           </Button>
 
           <Label className="block w-full space-y-2">
-            <p>
+            <p className="text-muted-foreground">
               Label <span className="text-red-500">*</span>
             </p>
             <Input
@@ -153,7 +190,7 @@ function FieldColumns({
           </Label>
 
           <Label className="block w-full space-y-2">
-            <p>
+            <p className="text-muted-foreground">
               Key <span className="text-red-500">*</span>
             </p>
             <Input

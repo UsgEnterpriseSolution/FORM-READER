@@ -117,29 +117,30 @@ class Data {
     }
   }
 
-  public static async send(configRef: string, dataRef: string) {
+  public static async send(configRef: string, data: { [k: string]: any }) {
     try {
       const config = await Config.get(configRef);
       if (config === null) {
         throw new Error("Config not found.");
       }
 
-      const data = await this.get(dataRef);
-      if (data === null) {
-        throw new Error("Data not found.");
+      if (!config.endpoint) {
+        throw new Error("Endpoint not found.");
       }
 
-      if (config.endpoint) {
-        await fetch(config.endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data.data),
-        });
+      const res = await fetch(config.endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data.data),
+      });
 
-        return true;
-      } else false;
+      if (!res.ok) {
+        return false;
+      }
+
+      return true;
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);

@@ -12,7 +12,7 @@ import {
 class Config {
   public static async all() {
     try {
-      return await db.select().from(tbConfig);
+      return await db.select().from(tbConfig).orderBy(tbConfig.createdOn);
     } catch (error) {
       if (error instanceof Error) {
         console.error(error.message);

@@ -23,7 +23,8 @@ type Props = {
 };
 
 export default function GenericOptionField({ fieldId, data }: Props) {
-  const { removeConfigField, updateConfigField } = useActions();
+  const { removeConfigField, updateConfigField, updateConfigFieldType } =
+    useActions();
 
   const handleChange = (key: keyof OptionField, value: any) => {
     updateConfigField(fieldId, { ...data, [key]: value });
@@ -75,7 +76,36 @@ export default function GenericOptionField({ fieldId, data }: Props) {
       <input type="hidden" name="field" value={JSON.stringify(data)} />
 
       <Label className="block space-y-2">
-        <p>
+        <p className="text-muted-foreground">
+          Field <span className="text-red-500">*</span>
+        </p>
+        <Select
+          name="type"
+          value={data.type}
+          onValueChange={(v) => updateConfigFieldType(fieldId, v)}
+          required
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select field" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="TEXT">Text</SelectItem>
+            <SelectItem value="NUMBER">Number</SelectItem>
+            <SelectItem value="DATE">Date</SelectItem>
+            <SelectItem value="EMAIL">Email</SelectItem>
+            <SelectItem value="PHONE">Phone</SelectItem>
+            <SelectItem value="TEXTAREA">Textarea</SelectItem>
+            <SelectItem value="SELECT">Select</SelectItem>
+            <SelectItem value="CHECKBOX">Checkbox</SelectItem>
+            <SelectItem value="RADIO">Radio</SelectItem>
+            <SelectItem value="TABLE">Table</SelectItem>
+            <SelectItem value="SWITCH">Switch</SelectItem>
+          </SelectContent>
+        </Select>
+      </Label>
+
+      <Label className="block space-y-2">
+        <p className="text-muted-foreground">
           Label <span className="text-red-500">*</span>
         </p>
         <Input
@@ -88,8 +118,8 @@ export default function GenericOptionField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          Name <span className="text-red-500">*</span>
+        <p className="text-muted-foreground">
+          Key <span className="text-red-500">*</span>
         </p>
         <Input
           type="text"
@@ -101,14 +131,15 @@ export default function GenericOptionField({ fieldId, data }: Props) {
       </Label>
 
       <Label className="block space-y-2">
-        <p>
-          Placeholder <span className="text-muted-foreground">(Optional)</span>
+        <p className="text-muted-foreground">
+          Description <span className="text-red-500">*</span>
         </p>
         <Input
           type="text"
-          placeholder="eg: dd/mm/yyyy"
+          placeholder="eg: Select Option"
           value={data.placeholder}
           onChange={(e) => handleChange("placeholder", e.target.value)}
+          required
         />
       </Label>
 
@@ -120,13 +151,13 @@ export default function GenericOptionField({ fieldId, data }: Props) {
       />
 
       <Label className="block space-y-2">
-        <p>
+        <p className="text-muted-foreground">
           Default <span className="text-red-500">*</span>
         </p>
 
         {(data.options ?? []).length === 0 ? (
           <>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-sm font-normal">
               Add options to choose a default.
             </p>
             <Select disabled>
@@ -188,7 +219,7 @@ function FieldOptions({
   return (
     <div ref={containerRef} className="space-y-2">
       <div className="flex items-center justify-between">
-        <h6 className="text-sm font-medium">
+        <h6 className="text-muted-foreground text-sm font-medium">
           Options <span className="text-red-500">*</span>
         </h6>
         <Button type="button" variant={"outline"} size={"icon"} onClick={onAdd}>
@@ -213,7 +244,7 @@ function FieldOptions({
           </Button>
 
           <Label className="block space-y-2">
-            <p>
+            <p className="text-muted-foreground">
               Label <span className="text-red-500">*</span>
             </p>
             <Input
@@ -226,7 +257,7 @@ function FieldOptions({
           </Label>
 
           <Label className="block space-y-2">
-            <p>
+            <p className="text-muted-foreground">
               Value <span className="text-red-500">*</span>
             </p>
             <Input

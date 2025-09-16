@@ -136,7 +136,7 @@ export default function ConfigEditor({
         >
           <div className="space-y-3">
             <Label className="block space-y-2">
-              <p>Title</p>
+              <p className="text-muted-foreground">Title</p>
               <Input
                 type="text"
                 id="title"
@@ -149,7 +149,7 @@ export default function ConfigEditor({
             </Label>
 
             <Label className="block space-y-2">
-              <p>Description</p>
+              <p className="text-muted-foreground">Description</p>
               <Textarea
                 id="description"
                 name="description"
@@ -163,7 +163,7 @@ export default function ConfigEditor({
             </Label>
 
             <Label className="block space-y-2">
-              <p>Endpoint</p>
+              <p className="text-muted-foreground">Endpoint</p>
               <Input
                 type="text"
                 id="endpoint"
