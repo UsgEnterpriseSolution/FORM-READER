@@ -20,11 +20,16 @@ export async function convertToDataUrl(file: File): Promise<string> {
 
 export function formateDate(dateString: string): string {
   const date = new Date(dateString);
-  return date.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+
+  if (!date) return "";
+
+  // return date.toLocaleDateString(undefined, {
+  //   year: "numeric",
+  //   month: "short",
+  //   day: "numeric",
+  //   hour: "2-digit",
+  //   minute: "2-digit",
+  // });
+
+  return date.toLocaleDateString();
 }

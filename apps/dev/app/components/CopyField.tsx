@@ -28,7 +28,7 @@ export default function CopyField({ value }: CopyFieldProps) {
   };
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <Input
         ref={inputRef}
         id={id}

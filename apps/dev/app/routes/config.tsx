@@ -35,6 +35,7 @@ export async function action({
           title: formData.get("title") as string,
           description: formData.get("description") as string,
           endpoint: formData.get("endpoint") as string,
+          formCode: formData.get("formCode") as string,
           fields: (formData.getAll("field") as string[]).map((field) =>
             JSON.parse(field),
           ),
@@ -44,6 +45,17 @@ export async function action({
           return {
             status: "fail",
             message: "Invalid form data.",
+            timestamp: Date.now(),
+          };
+        }
+
+        const formCode = await Config.formCodeCheck(
+          rawConfigZodObj.data.formCode,
+        );
+        if (formCode.exists) {
+          return {
+            status: "fail",
+            message: "Form code already in use.",
             timestamp: Date.now(),
           };
         }
@@ -88,6 +100,7 @@ export async function action({
           title: formData.get("title") as string,
           description: formData.get("description") as string,
           endpoint: formData.get("endpoint") as string,
+          formCode: formData.get("formCode") as string,
           fields: (formData.getAll("field") as string[]).map((field) =>
             JSON.parse(field),
           ),
@@ -97,6 +110,17 @@ export async function action({
           return {
             status: "fail",
             message: "Invalid form data.",
+            timestamp: Date.now(),
+          };
+        }
+
+        const formCode = await Config.formCodeCheck(
+          rawConfigZodObj.data.formCode,
+        );
+        if (formCode.exists && formCode.configRef !== configRef) {
+          return {
+            status: "fail",
+            message: "Form code already in use.",
             timestamp: Date.now(),
           };
         }
@@ -187,6 +211,8 @@ export async function loader(): Promise<AppResponse<ConfigLoaderRes>> {
         configRef: config.configRef,
         title: config.title,
         description: config.description,
+        endpoint: config.endpoint,
+        formCode: config.formCode,
         lastUpdated: config.updatedOn ?? "---",
       })),
       timestamp: Date.now(),
@@ -250,10 +276,10 @@ export default function Component({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>NO</TableHead>
-            <TableHead>Config Id</TableHead>
             <TableHead>Name</TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Endpoint</TableHead>
+            <TableHead>Form Code</TableHead>
             <TableHead>Last Updated</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -262,18 +288,12 @@ export default function Component({
           {loaderData.status === "success" &&
             loaderData.data.map((config, index) => (
               <TableRow key={config.configRef}>
-                <TableCell>
-                  <div className="bg-primary text-secondary grid size-8 place-content-center rounded-full">
-                    {index + 1}
-                  </div>
-                </TableCell>
-                <TableCell className="max-w-[192px] truncate">
-                  {config.configRef}
-                </TableCell>
                 <TableCell>{config.title}</TableCell>
                 <TableCell className="max-w-[312px]">
                   {config.description}
                 </TableCell>
+                <TableCell>{config.endpoint}</TableCell>
+                <TableCell>{config.formCode}</TableCell>
                 <TableCell>{formateDate(config.lastUpdated)}</TableCell>
                 <TableCell>
                   <div className="flex gap-2">

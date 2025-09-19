@@ -1,21 +1,22 @@
-import { href, redirect, useBlocker, useNavigate } from "react-router";
-import { BadgeAlert, BadgeCheck, BadgeX, Eye, FilePlus } from "lucide-react";
+import { href, redirect, useNavigate, useSearchParams } from "react-router";
+import { BadgeAlert, BadgeCheck, BadgeX, Eye } from "lucide-react";
 
 import type { Route } from "./+types/submit";
 import { Button } from "~/components/ui/button";
-import ReviewBlockerModel from "~/components/ReviewBlockerModal";
 import CopyField from "~/components/CopyField";
 import type { AppResponse } from "~/types";
 import Data from "~/logic/data";
 
 export async function loader({
   params,
+  request,
 }: Route.LoaderArgs): Promise<AppResponse<string> | Response> {
+  const url = new URL(request.url);
+
   try {
     const dataRef = params.dataRef;
-
     if (!dataRef) {
-      return redirect(href("/"));
+      return redirect(href("/") + url.search);
     }
 
     const isValid = await Data.isValid(dataRef);
@@ -46,24 +47,16 @@ export async function loader({
 
 export default function Submit({ params, loaderData }: Route.ComponentProps) {
   const navigate = useNavigate();
-
-  const handleNewDoc = () => {
-    navigate(href("/"));
-  };
+  const [searchParams] = useSearchParams();
+  const search = searchParams.toString();
 
   const handleView = () => {
-    navigate(href("/data"));
+    navigate(href("/data") + `?${search}`);
   };
 
-  const blocker = useBlocker(({ nextLocation }) =>
-    nextLocation.pathname.includes("/review"),
-  );
-
   return (
-    <section className="mx-4 mt-10 flex h-fit max-w-[608px] flex-col items-center gap-6 rounded-md border-2 border-dashed p-4 sm:mx-auto">
-      {blocker.state === "blocked" && <ReviewBlockerModel blocker={blocker} />}
-
-      <div className="flex w-full items-center justify-between">
+    <section className="mx-4 mt-10 flex h-fit max-w-[400px] flex-col items-center gap-4 rounded-md border-2 border-dashed p-4 sm:mx-auto">
+      <div className="w-full space-y-2">
         {loaderData && loaderData.status === "success" && (
           <div className="flex items-center gap-2">
             <BadgeCheck size={18} className="stroke-green-400" />
@@ -90,17 +83,10 @@ export default function Submit({ params, loaderData }: Route.ComponentProps) {
 
       <CopyField value={params.dataRef ?? ""} />
 
-      <div className="flex gap-2">
-        <Button variant="outline" onClick={handleNewDoc}>
-          <FilePlus />
-          <span>New document</span>
-        </Button>
-
-        <Button variant="default" onClick={handleView}>
-          <Eye />
-          <span>View data logs</span>
-        </Button>
-      </div>
+      <Button className="w-full" variant="outline" onClick={handleView}>
+        <Eye />
+        <span>View data logs</span>
+      </Button>
     </section>
   );
 }

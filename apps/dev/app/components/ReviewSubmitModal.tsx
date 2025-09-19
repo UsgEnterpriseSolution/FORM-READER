@@ -20,7 +20,11 @@ export default function ReviewSubmitModal() {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="default" disabled={isPageSubmitting}>
+        <Button
+          className="ml-auto"
+          variant="default"
+          disabled={isPageSubmitting}
+        >
           {isPageSubmitting && <Loader2Icon className="animate-spin" />}
           Submit
         </Button>

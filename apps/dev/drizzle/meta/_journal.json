@@ -15,6 +15,20 @@
       "when": 1757943857872,
       "tag": "0001_colossal_fantastic_four",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1758119308341,
+      "tag": "0002_same_vivisector",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1758201960303,
+      "tag": "0003_pretty_ezekiel",
+      "breakpoints": true
     }
   ]
 }

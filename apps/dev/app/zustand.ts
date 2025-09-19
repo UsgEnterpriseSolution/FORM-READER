@@ -5,6 +5,7 @@ import type {
   ConfigFieldType,
   ConfigObj,
   DataLog,
+  Discriminated,
   Engine,
   FieldObj,
 } from "~/types";
@@ -15,10 +16,12 @@ import {
   toggleFieldTypeSchema,
 } from "~/zod";
 
-export type StoreState = {
+type StoreState = {
   settings: {
+    imgCount: number;
     engine: Engine | null;
     configRef: string | null;
+    hideConfigRef: boolean;
   };
   config: {
     loading: boolean;
@@ -27,6 +30,7 @@ export type StoreState = {
       title: string | null;
       description: string | null;
       endpoint: string | null;
+      formCode: string | null;
     };
     fields: {
       fieldId: string;
@@ -35,11 +39,12 @@ export type StoreState = {
   };
 };
 
-export type StoreActions = {
-  setEngine: (engine: Engine) => void;
-  setconfigRef: (configRef: string) => void;
+type SettingsObj = Discriminated<StoreState["settings"]>;
+
+type StoreActions = {
+  setSettings: (obj: SettingsObj) => void;
   setConfigDetails: (
-    key: "title" | "description" | "endpoint",
+    key: "title" | "description" | "endpoint" | "formCode",
     value: string,
   ) => void;
   getDefaultFieldData: (type: ConfigFieldType) => FieldObj;
@@ -62,8 +67,10 @@ type AppStore = {
 export const useAppStore = create<AppStore>((set, get) => ({
   state: {
     settings: {
+      imgCount: 0,
       engine: null,
       configRef: null,
+      hideConfigRef: false,
     },
     config: {
       loading: false,
@@ -72,24 +79,17 @@ export const useAppStore = create<AppStore>((set, get) => ({
         title: null,
         description: null,
         endpoint: null,
+        formCode: null,
       },
       fields: [],
     },
   },
   actions: {
-    setEngine: (engine) => {
+    setSettings: ({ key, value }) => {
       set((store) => ({
         state: {
           ...store.state,
-          settings: { ...store.state.settings, engine },
-        },
-      }));
-    },
-    setconfigRef: (configRef) => {
-      set((store) => ({
-        state: {
-          ...store.state,
-          settings: { ...store.state.settings, configRef },
+          settings: { ...store.state.settings, [key]: value },
         },
       }));
     },
@@ -164,6 +164,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
               title: null,
               description: null,
               endpoint: null,
+              formCode: null,
             },
             fields: [],
           },
@@ -214,6 +215,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
                 title: config.title ?? null,
                 description: config.description ?? null,
                 endpoint: config.endpoint ?? null,
+                formCode: config.formCode ?? null,
               },
               fields: mappedFields,
             },

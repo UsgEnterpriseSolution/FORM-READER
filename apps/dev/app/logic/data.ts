@@ -43,15 +43,20 @@ class Data {
     }
   }
 
-  public static async insert(configRef: string, data: { [k: string]: any }) {
+  public static async insert(
+    configRef: string,
+    data: { [k: string]: any },
+    branchCode: string,
+    username: string,
+  ) {
     try {
       const result = await db
         .insert(tbData)
         .values({
           configRef,
           data,
-          username: "edwin_martinson",
-          branchCode: "007",
+          username,
+          branchCode,
         })
         .returning();
 

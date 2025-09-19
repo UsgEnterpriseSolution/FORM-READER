@@ -19,6 +19,12 @@ import type {
 
 export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA" | "OPENAI";
 
+export type EngineList = {
+  label: string;
+  value: Engine;
+  isLocal: boolean;
+}[];
+
 export type DataLog = {
   id: number;
   dataRef: string;
@@ -59,17 +65,15 @@ export type UploadLoaderRes = {
     label: string;
     value: string;
   }>;
-  engines: Array<{
-    label: string;
-    value: Engine;
-    isLocal: boolean;
-  }>;
+  engines: EngineList;
 };
 
 export type ConfigLoaderRes = Array<{
   configRef: string;
   title: string;
   description: string;
+  endpoint: string;
+  formCode: string;
   lastUpdated: string;
 }>;
 
@@ -109,4 +113,8 @@ export type EditorDetails = {
   submitLabel: string;
 };
 
-// --- Store types ---
+// --- Helpers ---
+
+export type Discriminated<T> = {
+  [K in keyof T]: { key: K; value: T[K] };
+}[keyof T];

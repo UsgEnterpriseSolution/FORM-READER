@@ -68,7 +68,8 @@ export const configSchema = z.object({
   description: z.string(),
   fields: z.array(fieldSchema),
   ajvSchema: z.record(z.string(), z.any()),
-  endpoint: z.string().nullable(),
+  endpoint: z.string(),
+  formCode: z.string(),
   createdOn: z.string(),
   updatedOn: z.string().nullable(),
 });
@@ -85,4 +86,10 @@ export const reviewPayloadSchema = z.object({
   images: z.array(z.string()),
   config: configSchema,
   schema: z.record(z.string(), z.any()),
+});
+
+export const uploadFormSchema = z.object({
+  engine: z.enum(["GOOGLE", "LMSTUDIO", "OLLAMA", "OPENAI"]),
+  configRef: z.string().length(36),
+  images: z.array(z.string()).min(1),
 });

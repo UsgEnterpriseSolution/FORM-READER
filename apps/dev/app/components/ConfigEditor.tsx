@@ -174,6 +174,19 @@ export default function ConfigEditor({
                 required
               />
             </Label>
+
+            <Label className="block space-y-2">
+              <p className="text-muted-foreground">Form Code</p>
+              <Input
+                type="text"
+                id="formCode"
+                name="formCode"
+                placeholder="eg: 0000"
+                defaultValue={details.formCode ?? ""}
+                onChange={(e) => setConfigDetails("formCode", e.target.value)}
+                required
+              />
+            </Label>
           </div>
 
           <Input

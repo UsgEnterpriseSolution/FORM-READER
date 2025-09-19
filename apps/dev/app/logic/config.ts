@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, exists } from "drizzle-orm";
 import { db } from "~/db/database";
 import { tbConfig } from "~/db/schema/tbConfig";
 import type { FieldObj, RawConfig } from "~/types";
@@ -189,6 +189,38 @@ class Config {
         console.error(error.message);
       } else console.error(error);
       return false;
+    }
+  }
+
+  public static async formCodeCheck(formCode: string) {
+    try {
+      const config = await db
+        .select()
+        .from(tbConfig)
+        .where(eq(tbConfig.formCode, formCode));
+
+      switch (config.length) {
+        case 0:
+          return {
+            exists: false,
+            configRef: "",
+          };
+        case 1:
+          return {
+            exists: true,
+            configRef: config[0].configRef,
+          };
+        default:
+          throw new Error("Duplicate form code found.");
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else console.error(error);
+      return {
+        exists: true,
+        configRef: "",
+      };
     }
   }
 

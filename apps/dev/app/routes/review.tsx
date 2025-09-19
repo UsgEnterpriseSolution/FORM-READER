@@ -16,11 +16,25 @@ import Data from "~/logic/data";
 
 export async function action({
   request,
+  params,
 }: Route.ActionArgs): Promise<AppResponse<any> | Response> {
+  const url = new URL(request.url);
   const formData = await request.formData();
   const submission = Object.fromEntries(formData);
 
   try {
+    const searchParams = url.searchParams;
+    const branchCode = searchParams.get("branchCode");
+    const username = searchParams.get("username");
+
+    if (!branchCode || !username) {
+      return {
+        status: "fail",
+        message: "Undefined branch code or username",
+        timestamp: Date.now(),
+      };
+    }
+
     const configRef = submission["configRef"] as string;
     const isValid = await Config.isValid(configRef);
 
@@ -50,7 +64,7 @@ export async function action({
       };
     }
 
-    const result = await Data.insert(configRef, data);
+    const result = await Data.insert(configRef, data, branchCode, username);
     if (result === null) {
       return {
         status: "fail",
@@ -59,7 +73,16 @@ export async function action({
       };
     }
 
-    return redirect(href("/submit/:dataRef", { dataRef: result.dataRef }));
+    const cacheKey = params.key;
+    const isValidCacheKey = appCache.has(cacheKey);
+
+    if (isValidCacheKey) {
+      appCache.delete(cacheKey);
+    }
+
+    return redirect(
+      href("/submit/:dataRef", { dataRef: result.dataRef }) + url.search,
+    );
   } catch (error) {
     return {
       code: 500,
@@ -72,11 +95,14 @@ export async function action({
 
 export async function loader({
   params,
+  request,
 }: Route.LoaderArgs): Promise<Response | AppResponse<ReviewLoaderRes>> {
+  const url = new URL(request.url);
+
   try {
     const cacheKey = params.key;
     if (!appCache.has(cacheKey)) {
-      return redirect(href("/"));
+      return redirect(href("/") + url.search);
     }
 
     const cacheData = appCache.get(cacheKey) as AppCache;
@@ -116,7 +142,6 @@ export default function Review({
       if (loaderData.data.fieldData) setData(loaderData.data.fieldData);
 
       console.log("Field Data:", loaderData.data.fieldData);
-      console.log("Config:", loaderData.data.config);
     }
   }, [loaderData.timestamp]);
 

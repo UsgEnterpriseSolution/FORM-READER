@@ -1,4 +1,3 @@
-import { Form, href } from "react-router";
 import { FileIcon, UploadIcon } from "lucide-react";
 
 import {
@@ -9,9 +8,9 @@ import {
 import { Button } from "~/components/ui/button";
 import { useEffect, useState } from "react";
 import { convertToDataUrl } from "~/utils/functions";
-import { useSettings } from "~/zustand";
+import { useActions } from "~/zustand";
 
-type UploadFormProps = {
+type UploadImageProps = {
   actions: FileUploadActions;
   isDragging: boolean;
   files: FileWithPreview[];
@@ -19,54 +18,44 @@ type UploadFormProps = {
   maxSize: number;
 };
 
-export default function UploadForm({
+export default function UploadImage({
   actions,
   isDragging,
   files,
   maxFiles,
   maxSize,
-}: UploadFormProps) {
+}: UploadImageProps) {
   const [imgUrls, setImgUrls] = useState<string>("");
-  const settings = useSettings();
+  const { setSettings } = useActions();
 
   useEffect(() => {
     async function convertToFile(files: File[]) {
       const imgDataUrls = await Promise.all(files.map(convertToDataUrl));
       setImgUrls(JSON.stringify(imgDataUrls));
+      setSettings({ key: "imgCount", value: files.length });
     }
 
     convertToFile(files.map((fileObj) => fileObj.file as File));
   }, [files]);
 
   return (
-    <Form
-      id="image-form"
-      method="POST"
-      encType="multipart/form-data"
+    <div
       onDragEnter={actions.handleDragEnter}
       onDragLeave={actions.handleDragLeave}
       onDragOver={actions.handleDragOver}
       onDrop={actions.handleDrop}
       data-dragging={isDragging || undefined}
       data-files={files.length > 0 || undefined}
-      className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-56 flex-col items-center border-2 border-dashed p-4 transition-colors not-data-[files]:justify-center has-[input:focus]:ring-[3px] data-[files]:hidden"
+      className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-56 flex-col items-center justify-center border-2 border-dashed p-4 transition-colors has-[input:focus]:ring-[3px]"
     >
       <input
         {...actions.getInputProps({ name: "image" })}
         className="sr-only"
         aria-label="Upload files"
       />
-      <input type="hidden" name="images" value={imgUrls} />
-      <input
-        type="hidden"
-        name="configRef"
-        value={settings.configRef === null ? "" : settings.configRef}
-      />
-      <input
-        type="hidden"
-        name="engine"
-        value={settings.engine === null ? "" : settings.engine}
-      />
+
+      <input type="hidden" name="images" value={imgUrls} required />
+
       <div className="flex flex-col items-center justify-center text-center">
         <div
           className="bg-background mb-2 flex size-11 shrink-0 items-center justify-center rounded-full border"
@@ -88,6 +77,6 @@ export default function UploadForm({
           Select files
         </Button>
       </div>
-    </Form>
+    </div>
   );
 }
