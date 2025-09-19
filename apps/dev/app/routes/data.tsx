@@ -36,6 +36,8 @@ export async function loader(): Promise<AppResponse<DataLog[]> | Response> {
         id: dataLog.id,
         dataRef: dataLog.dataRef,
         formTitle: (await Config.title(configRef)) ?? configRef,
+        branchCode: dataLog.branchCode,
+        username: dataLog.username,
         extDate: dataLog.createdOn,
         data: dataLog.data as { [k: PropertyKey]: any },
       });
@@ -67,9 +69,10 @@ export default function Component({ loaderData }: Route.ComponentProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Extraction Date</TableHead>
-            <TableHead>Data Id</TableHead>
+            <TableHead>Date</TableHead>
             <TableHead>Config</TableHead>
+            <TableHead>Branch Code</TableHead>
+            <TableHead>Username</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -82,8 +85,9 @@ export default function Component({ loaderData }: Route.ComponentProps) {
                 <TableCell className="max-w-[100px]">
                   {formateDate(item.extDate)}
                 </TableCell>
-                <TableCell className="truncate">{item.dataRef}</TableCell>
                 <TableCell className="truncate">{item.formTitle}</TableCell>
+                <TableCell className="truncate">{item.branchCode}</TableCell>
+                <TableCell className="truncate">{item.username}</TableCell>
                 <TableCell>
                   <span className="space-x-2">
                     <Button variant="outline" size="icon">

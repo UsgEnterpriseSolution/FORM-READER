@@ -126,16 +126,16 @@ body {
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  html {
-    @apply h-full;
-  }
-  body {
-    @apply bg-background text-foreground h-full;
-  }
+* {
+  @apply border-border outline-ring/50;
+}
+
+html {
+  @apply bg-muted;
+}
+
+body {
+  @apply bg-muted text-foreground;
 }
 
 @layer utilities {

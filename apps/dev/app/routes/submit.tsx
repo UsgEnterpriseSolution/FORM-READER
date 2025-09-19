@@ -55,7 +55,7 @@ export default function Submit({ params, loaderData }: Route.ComponentProps) {
   };
 
   return (
-    <section className="mx-4 mt-10 flex h-fit max-w-[400px] flex-col items-center gap-4 rounded-md border-2 border-dashed p-4 sm:mx-auto">
+    <section className="bg-background mx-4 mt-10 flex h-fit max-w-[400px] flex-col items-center gap-4 rounded-md p-4 sm:mx-auto">
       <div className="w-full space-y-2">
         {loaderData && loaderData.status === "success" && (
           <div className="flex items-center gap-2">
@@ -83,10 +83,10 @@ export default function Submit({ params, loaderData }: Route.ComponentProps) {
 
       <CopyField value={params.dataRef ?? ""} />
 
-      <Button className="w-full" variant="outline" onClick={handleView}>
+      {/* <Button className="w-full" variant="outline" onClick={handleView}>
         <Eye />
         <span>View data logs</span>
-      </Button>
+      </Button> */}
     </section>
   );
 }

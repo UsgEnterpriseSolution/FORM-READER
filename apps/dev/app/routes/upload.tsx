@@ -52,8 +52,6 @@ export async function action({
       images: JSON.parse(formData.get("images") as string),
     });
 
-    console.log("configRef:", formData.get("configRef") as string);
-
     if (!uploadFormZodObj.success) {
       return {
         status: "fail",

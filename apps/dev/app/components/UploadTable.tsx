@@ -91,7 +91,7 @@ export default function UploadTable({
           </Table>
         </div>
       ) : (
-        <div className="grid h-[68px] place-items-center border-2 border-dashed">
+        <div className="bg-background grid h-[68px] place-items-center rounded-md">
           <p className="text-muted-foreground text-sm">No files selected.</p>
         </div>
       )}

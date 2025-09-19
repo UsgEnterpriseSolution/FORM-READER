@@ -30,6 +30,8 @@ export type DataLog = {
   dataRef: string;
   formTitle: string;
   extDate: string;
+  branchCode: string;
+  username: string;
   data: { [k: PropertyKey]: any };
 };
 

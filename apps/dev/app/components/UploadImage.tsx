@@ -46,7 +46,7 @@ export default function UploadImage({
       onDrop={actions.handleDrop}
       data-dragging={isDragging || undefined}
       data-files={files.length > 0 || undefined}
-      className="border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-56 flex-col items-center justify-center border-2 border-dashed p-4 transition-colors has-[input:focus]:ring-[3px]"
+      className="bg-background border-input data-[dragging=true]:bg-accent/50 has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 flex min-h-56 flex-col items-center justify-center rounded-md p-4 transition-colors has-[input:focus]:ring-[3px]"
     >
       <input
         {...actions.getInputProps({ name: "image" })}

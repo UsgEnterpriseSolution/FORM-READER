@@ -2,34 +2,19 @@ import { useEffect, useState } from "react";
 import { Loader2Icon, Sparkles } from "lucide-react";
 import {
   href,
-  NavLink,
-  useBlocker,
   useNavigate,
   useNavigation,
   useSearchParams,
 } from "react-router";
 
 import Stepper from "./Stepper";
-import HomeBlockerModel from "./HomeBlockerModel";
 import { Button } from "./ui/button";
 import ReviewSubmitModal from "./ReviewSubmitModal";
-import NavMenu from "./NavMenu";
 import { useSettings } from "~/zustand";
 
 export default function Navbar() {
   const [path, setPath] = useState<string>();
   let pathname = "/";
-
-  const homePageBlocker = useBlocker(({ nextLocation, currentLocation }) => {
-    if (
-      currentLocation.pathname.includes("/review") &&
-      nextLocation.pathname === href("/")
-    ) {
-      return true;
-    }
-
-    return false;
-  });
 
   try {
     pathname = window.location.pathname;
@@ -42,12 +27,8 @@ export default function Navbar() {
   }, [pathname]);
 
   return (
-    <header className="border-b px-4 md:px-6">
-      {homePageBlocker.state === "blocked" && (
-        <HomeBlockerModel blocker={homePageBlocker} />
-      )}
-
-      <div className="grid h-16 grid-cols-[1fr_auto_1fr] items-center gap-2">
+    <header className="bg-background border-b px-4 md:px-6">
+      <div className="mx-auto grid h-16 max-w-[1280px] grid-cols-[1fr_auto_1fr] items-center gap-2">
         <PrimaryAction path={path ?? ""} />
 
         <div className="flex gap-6">
