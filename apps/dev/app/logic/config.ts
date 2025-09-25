@@ -1,4 +1,4 @@
-import { eq, exists } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "~/db/database";
 import { tbConfig } from "~/db/schema/tbConfig";
 import type { FieldObj, RawConfig } from "~/types";

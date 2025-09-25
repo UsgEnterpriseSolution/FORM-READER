@@ -27,7 +27,7 @@ export default function GenericToggleField({ fieldId, data }: Props) {
   };
 
   return (
-    <div className="space-y-4 rounded-lg border p-3">
+    <div className="bg-card space-y-4 rounded-lg border p-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <p className="text-sm">{data.label}</p>

@@ -1,0 +1,1 @@
+ALTER TABLE "tb_config" ADD COLUMN "endpoint" jsonb DEFAULT '{"url":"","headers":{}}'::jsonb NOT NULL;

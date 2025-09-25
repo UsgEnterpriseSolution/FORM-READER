@@ -211,7 +211,7 @@ export async function loader(): Promise<AppResponse<ConfigLoaderRes>> {
         configRef: config.configRef,
         title: config.title,
         description: config.description,
-        endpoint: config.endpoint,
+        endpoint: config.endpoint.url,
         formCode: config.formCode,
         lastUpdated: config.updatedOn ?? "---",
       })),
@@ -265,7 +265,12 @@ export default function Component({
           {state === "submitting" && <Loader2 className="animate-spin" />}
         </span>
 
-        <ConfigEditor>
+        <ConfigEditor
+          method="POST"
+          title="Add form"
+          desc="Create a new form by providing a title, description, and adding fields below."
+          submitLabel="Submit form"
+        >
           <Button onClick={handleCreate}>
             <CirclePlus />
             <p>Add Form</p>
@@ -298,16 +303,18 @@ export default function Component({
                 <TableCell>
                   <div className="flex gap-2">
                     <ConfigViewer>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => handleView(config.configRef)}
-                      >
+                      <Button variant="outline" size="icon">
                         <Eye />
                       </Button>
                     </ConfigViewer>
 
-                    <ConfigEditor configRef={config.configRef}>
+                    <ConfigEditor
+                      configRef={config.configRef}
+                      method="PUT"
+                      title="Edit form"
+                      desc="Update the form by modifying the title, description, and fields below."
+                      submitLabel="Save changes"
+                    >
                       <Button
                         variant="outline"
                         size="icon"

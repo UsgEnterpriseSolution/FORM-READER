@@ -68,7 +68,10 @@ export const configSchema = z.object({
   description: z.string(),
   fields: z.array(fieldSchema),
   ajvSchema: z.record(z.string(), z.any()),
-  endpoint: z.string(),
+  endpoint: z.object({
+    url: z.string().url(),
+    headers: z.record(z.string(), z.string()),
+  }),
   formCode: z.string(),
   createdOn: z.string(),
   updatedOn: z.string().nullable(),

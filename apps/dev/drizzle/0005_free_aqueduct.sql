@@ -1,0 +1,1 @@
+ALTER TABLE "tb_data" DROP COLUMN "form_code";

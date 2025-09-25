@@ -1,0 +1,1 @@
+ALTER TABLE "tb_data" ADD COLUMN "form_code" varchar DEFAULT 'ABCD' NOT NULL;

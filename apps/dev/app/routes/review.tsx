@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { useEffect, useState } from "react";
 import { href, redirect } from "react-router";
 
@@ -55,7 +56,10 @@ export async function action({
       };
     }
 
-    const success = await Data.send(configRef, data);
+    const dataRef = crypto.randomUUID();
+    const user = { branchCode, username };
+
+    const success = await Data.send(configRef, dataRef, user, data);
     if (!success) {
       return {
         status: "fail",
@@ -64,7 +68,7 @@ export async function action({
       };
     }
 
-    const result = await Data.insert(configRef, data, branchCode, username);
+    const result = await Data.insert(configRef, dataRef, user, data);
     if (result === null) {
       return {
         status: "fail",
@@ -75,7 +79,6 @@ export async function action({
 
     const cacheKey = params.key;
     const isValidCacheKey = appCache.has(cacheKey);
-
     if (isValidCacheKey) {
       appCache.delete(cacheKey);
     }

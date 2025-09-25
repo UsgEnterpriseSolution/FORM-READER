@@ -15,7 +15,7 @@ import type {
   toggleFieldTypeSchema,
 } from "./zod";
 
-// --- Generic types ---
+// --- Engine types ---
 
 export type Engine = "GOOGLE" | "LMSTUDIO" | "OLLAMA" | "OPENAI";
 
@@ -24,6 +24,8 @@ export type EngineList = {
   value: Engine;
   isLocal: boolean;
 }[];
+
+// --- Data Log types ---
 
 export type DataLog = {
   id: number;
@@ -98,6 +100,20 @@ export type ConfigFieldObj = {
   type: ConfigFieldType;
 };
 
+export type ConfigImg = {
+  name: string;
+  size: number;
+  type: string;
+  dataUrl: string;
+};
+
+export type ConfigEndpointObj = {
+  url: string;
+  headers: { [key: string]: string };
+};
+
+// --- Field Types ---
+
 export type BaseField = z.infer<typeof baseFieldSchema>;
 export type TextField = z.infer<typeof textFieldSchema>;
 export type OptionField = z.infer<typeof optionFieldSchema>;
@@ -107,6 +123,8 @@ export type ToggleField = z.infer<typeof toggleFieldSchema>;
 export type FieldObj = z.infer<typeof fieldSchema>;
 export type RawConfig = z.infer<typeof rawConfigSchema>;
 export type ConfigObj = z.infer<typeof configSchema>;
+
+// --- Editor Types ---
 
 export type EditorDetails = {
   method: "POST" | "PUT" | "GET";

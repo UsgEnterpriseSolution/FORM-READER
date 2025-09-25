@@ -3,6 +3,7 @@ import { create } from "zustand";
 import type {
   AppResponse,
   ConfigFieldType,
+  ConfigImg,
   ConfigObj,
   DataLog,
   Discriminated,
@@ -15,6 +16,8 @@ import {
   textFieldTypeSchema,
   toggleFieldTypeSchema,
 } from "~/zod";
+import type { FileWithPreview } from "./hooks/use-file-upload";
+import { objectUrlToBase64 } from "./utils/functions";
 
 type StoreState = {
   settings: {
@@ -26,6 +29,7 @@ type StoreState = {
   config: {
     loading: boolean;
     mode: "CREATE" | "EDIT" | "VIEW";
+    images: ConfigImg[];
     details: {
       title: string | null;
       description: string | null;
@@ -57,6 +61,7 @@ type StoreActions = {
   fetchConfiglet: (configRef: string) => Promise<void>;
   setConfigLoading: (state: boolean) => void;
   fetchDataLog: (dataRef: string) => Promise<AppResponse<DataLog>>;
+  setConfigImgs: (files: FileWithPreview[]) => Promise<void>;
 };
 
 type AppStore = {
@@ -75,6 +80,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
     config: {
       loading: false,
       mode: "CREATE",
+      images: [],
       details: {
         title: null,
         description: null,
@@ -161,6 +167,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
           config: {
             ...store.state.config,
             details: {
+              images: [],
               title: null,
               description: null,
               endpoint: null,
@@ -211,10 +218,11 @@ export const useAppStore = create<AppStore>((set, get) => ({
             config: {
               ...store.state.config,
               mode: "EDIT",
+              images: [],
               details: {
                 title: config.title ?? null,
                 description: config.description ?? null,
-                endpoint: config.endpoint ?? null,
+                endpoint: config.endpoint.url ?? null,
                 formCode: config.formCode ?? null,
               },
               fields: mappedFields,
@@ -306,6 +314,28 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
       throw new Error("Invalid field type.");
     },
+    setConfigImgs: async (files) => {
+      const imgObj: ConfigImg[] = [];
+
+      for (const file of files) {
+        imgObj.push({
+          name: file.file.name,
+          size: file.file.size,
+          type: file.file.type,
+          dataUrl: await objectUrlToBase64(file.preview ?? ""),
+        });
+      }
+
+      set((store) => ({
+        state: {
+          ...store.state,
+          config: {
+            ...store.state.config,
+            images: imgObj,
+          },
+        },
+      }));
+    },
   },
 }));
 
@@ -315,6 +345,9 @@ export const useSettings = () => useAppStore((store) => store.state.settings);
 
 export const useConfigMode = () =>
   useAppStore((store) => store.state.config.mode);
+
+export const useConfigImages = () =>
+  useAppStore((store) => store.state.config.images);
 
 export const useConfigDetails = () =>
   useAppStore((store) => store.state.config.details);

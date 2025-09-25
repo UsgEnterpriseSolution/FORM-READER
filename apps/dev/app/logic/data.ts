@@ -45,18 +45,19 @@ class Data {
 
   public static async insert(
     configRef: string,
+    dataRef: string,
+    user: { branchCode: string; username: string },
     data: { [k: string]: any },
-    branchCode: string,
-    username: string,
   ) {
     try {
       const result = await db
         .insert(tbData)
         .values({
+          dataRef,
           configRef,
           data,
-          username,
-          branchCode,
+          username: user.username,
+          branchCode: user.branchCode,
         })
         .returning();
 
@@ -122,7 +123,12 @@ class Data {
     }
   }
 
-  public static async send(configRef: string, data: { [k: string]: any }) {
+  public static async send(
+    configRef: string,
+    dataRef: string,
+    user: { branchCode: string; username: string },
+    data: { [k: string]: any },
+  ) {
     try {
       const config = await Config.get(configRef);
       if (config === null) {
@@ -133,12 +139,19 @@ class Data {
         throw new Error("Endpoint not found.");
       }
 
-      const res = await fetch(config.endpoint, {
+      const res = await fetch(config.endpoint.url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...config.endpoint.headers,
         },
-        body: JSON.stringify(data.data),
+        body: JSON.stringify({
+          formCode: config.formCode,
+          data,
+          branchCode: user.branchCode,
+          postedBy: user.username,
+          reference: dataRef,
+        }),
       });
 
       if (!res.ok) {

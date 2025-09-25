@@ -1,0 +1,1 @@
+ALTER TABLE "tb_config" ALTER COLUMN "endpoint" DROP DEFAULT;

@@ -1,0 +1,1 @@
+ALTER TABLE "tb_data" ADD COLUMN "link_ref" uuid NOT NULL;

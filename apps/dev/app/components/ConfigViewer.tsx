@@ -25,7 +25,6 @@ type ConfigViewerProps = {
 };
 
 export default function ConfigViewer({ children }: ConfigViewerProps) {
-  const mode = useConfigMode();
   const details = useConfigDetails();
   const fields = useConfigFields();
   const isConfigLoading = useConfigLoading();
@@ -35,7 +34,7 @@ export default function ConfigViewer({ children }: ConfigViewerProps) {
   return (
     <Sheet>
       <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent>
+      <SheetContent className="bg-muted">
         {isConfigLoading && (
           <div className="bg-primary-foreground/80 absolute inset-0 flex items-center justify-center">
             <Loader2 className="animate-spin" />

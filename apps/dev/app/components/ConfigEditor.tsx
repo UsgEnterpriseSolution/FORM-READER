@@ -12,9 +12,7 @@ import {
 } from "./ui/sheet";
 import { Button } from "./ui/button";
 import { Form, useActionData, useNavigation } from "react-router";
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
 import {
   Select,
   SelectContent,
@@ -23,65 +21,37 @@ import {
   SelectValue,
 } from "./ui/select";
 import { GenericFieldConfig } from "./GenericFieldConfig";
-import type { AppResponse, ConfigFieldType, EditorDetails } from "~/types";
+import type { AppResponse, ConfigFieldType } from "~/types";
 import {
   useActions,
-  useConfigDetails,
   useConfigFields,
   useConfigLoading,
   useConfigMode,
 } from "~/zustand";
 import { Loader2 } from "lucide-react";
+import ConfigImage from "./ConfigImage";
+import ConfigDetails from "./ConfigDetails";
 
 type ConfigEditorProps = {
   children: React.ReactNode;
   configRef?: string;
+  method: "POST" | "PUT";
+  title: string;
+  desc: string;
+  submitLabel: string;
 };
 
-export default function ConfigEditor({
-  children,
-  configRef,
-}: ConfigEditorProps) {
+export default function ConfigEditor(props: ConfigEditorProps) {
   const actionData = useActionData<AppResponse<any>>();
   const { state } = useNavigation();
 
   const mode = useConfigMode();
-  const details = useConfigDetails();
   const fields = useConfigFields();
   const isConfigLoading = useConfigLoading();
-  const { setConfigDetails, addConfigField, resetConfig } = useActions();
+  const { addConfigField, resetConfig } = useActions();
 
   const containerRef = useRef<HTMLFormElement | null>(null);
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
-
-  const editorDetails = (): EditorDetails => {
-    switch (mode) {
-      case "CREATE":
-        return {
-          method: "POST",
-          title: "Add form",
-          description:
-            "Create a new form by providing a title, description, and adding fields below.",
-          submitLabel: "Submit form",
-        };
-      case "EDIT":
-        return {
-          method: "PUT",
-          title: "Edit form",
-          description:
-            "Update the form by modifying the title, description, and fields below.",
-          submitLabel: "Save changes",
-        };
-
-      case "VIEW":
-        return {
-          method: "GET",
-          title: "View form",
-          description: "View the form's title, description, and fields below.",
-          submitLabel: "Save changes",
-        };
-    }
-  };
 
   const handleAddField = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,8 +85,8 @@ export default function ConfigEditor({
 
   return (
     <Sheet>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent>
+      <SheetTrigger asChild>{props.children}</SheetTrigger>
+      <SheetContent className="bg-muted">
         {isConfigLoading && (
           <div className="bg-primary-foreground/80 absolute inset-0 flex items-center justify-center">
             <Loader2 className="animate-spin" />
@@ -124,77 +94,26 @@ export default function ConfigEditor({
         )}
 
         <SheetHeader>
-          <SheetTitle>{editorDetails().title}</SheetTitle>
-          <SheetDescription>{editorDetails().description}</SheetDescription>
+          <SheetTitle>{props.title}</SheetTitle>
+          <SheetDescription>{props.desc}</SheetDescription>
         </SheetHeader>
 
         <Form
           id="configEditorForm"
-          method={editorDetails().method}
+          method={props.method}
           ref={containerRef}
           className="h-full space-y-4 overflow-y-scroll px-4"
         >
-          <div className="space-y-3">
-            <Label className="block space-y-2">
-              <p className="text-muted-foreground">Title</p>
-              <Input
-                type="text"
-                id="title"
-                name="title"
-                placeholder="eg: Bank - Debit Card Form"
-                defaultValue={details.title ?? ""}
-                onChange={(e) => setConfigDetails("title", e.target.value)}
-                required
-              />
-            </Label>
-
-            <Label className="block space-y-2">
-              <p className="text-muted-foreground">Description</p>
-              <Textarea
-                id="description"
-                name="description"
-                placeholder="eg: This form collects..."
-                defaultValue={details.description ?? ""}
-                onChange={(e) =>
-                  setConfigDetails("description", e.target.value)
-                }
-                required
-              />
-            </Label>
-
-            <Label className="block space-y-2">
-              <p className="text-muted-foreground">Endpoint</p>
-              <Input
-                type="text"
-                id="endpoint"
-                name="endpoint"
-                placeholder="eg: localhost:8000/api/cbm"
-                defaultValue={details.endpoint ?? ""}
-                onChange={(e) => setConfigDetails("endpoint", e.target.value)}
-                required
-              />
-            </Label>
-
-            <Label className="block space-y-2">
-              <p className="text-muted-foreground">Form Code</p>
-              <Input
-                type="text"
-                id="formCode"
-                name="formCode"
-                placeholder="eg: 0000"
-                defaultValue={details.formCode ?? ""}
-                onChange={(e) => setConfigDetails("formCode", e.target.value)}
-                required
-              />
-            </Label>
-          </div>
-
           <Input
             type="hidden"
             id="configRef"
             name="configRef"
-            defaultValue={configRef ?? ""}
+            defaultValue={props.configRef ?? ""}
           />
+
+          <ConfigImage />
+
+          <ConfigDetails />
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -257,7 +176,7 @@ export default function ConfigEditor({
                   <p>submitting...</p>
                 </>
               ) : (
-                <p>{editorDetails().submitLabel}</p>
+                <p>{props.submitLabel}</p>
               )}
             </Button>
 
