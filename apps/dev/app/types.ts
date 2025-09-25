@@ -109,7 +109,7 @@ export type ConfigImg = {
 
 export type ConfigEndpointObj = {
   url: string;
-  headers: { [key: string]: string };
+  headers: { key: string; value: string }[];
 };
 
 // --- Field Types ---

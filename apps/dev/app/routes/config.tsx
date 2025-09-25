@@ -31,14 +31,17 @@ export async function action({
 
     switch (request.method.toUpperCase()) {
       case "POST": {
+        const images = formData.get("images") as string | null;
+        const fields = formData.getAll("field") as string[];
+        const endpoint = formData.get("endpoint") as string | null;
+
         const rawConfigZodObj = rawConfigSchema.safeParse({
+          images: JSON.parse(images ?? "[]") as object[],
           title: formData.get("title") as string,
           description: formData.get("description") as string,
-          endpoint: formData.get("endpoint") as string,
+          endpoint: JSON.parse(endpoint ?? "{}") as object,
           formCode: formData.get("formCode") as string,
-          fields: (formData.getAll("field") as string[]).map((field) =>
-            JSON.parse(field),
-          ),
+          fields: fields.map((field) => JSON.parse(field)) as object[],
         });
 
         if (!rawConfigZodObj.success) {
@@ -96,14 +99,17 @@ export async function action({
           };
         }
 
+        const images = formData.get("images") as string | null;
+        const endpoint = formData.get("endpoint") as string | null;
+        const fields = formData.getAll("field") as string[];
+
         const rawConfigZodObj = rawConfigSchema.safeParse({
+          images: JSON.parse(images ?? "[]") as object[],
           title: formData.get("title") as string,
           description: formData.get("description") as string,
-          endpoint: formData.get("endpoint") as string,
+          endpoint: JSON.parse(endpoint ?? "{}") as object,
           formCode: formData.get("formCode") as string,
-          fields: (formData.getAll("field") as string[]).map((field) =>
-            JSON.parse(field),
-          ),
+          fields: fields.map((field) => JSON.parse(field)) as object[],
         });
 
         if (!rawConfigZodObj.success) {
@@ -291,7 +297,7 @@ export default function Component({
         </TableHeader>
         <TableBody>
           {loaderData.status === "success" &&
-            loaderData.data.map((config, index) => (
+            loaderData.data.map((config) => (
               <TableRow key={config.configRef}>
                 <TableCell>{config.title}</TableCell>
                 <TableCell className="max-w-[312px]">
@@ -303,7 +309,11 @@ export default function Component({
                 <TableCell>
                   <div className="flex gap-2">
                     <ConfigViewer>
-                      <Button variant="outline" size="icon">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleView(config.configRef)}
+                      >
                         <Eye />
                       </Button>
                     </ConfigViewer>

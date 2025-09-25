@@ -64,13 +64,21 @@ export const fieldSchema = z.union([
 export const configSchema = z.object({
   id: z.number(),
   configRef: z.string(),
+  images: z.array(
+    z.object({
+      name: z.string(),
+      size: z.number(),
+      type: z.string(),
+      dataUrl: z.string(),
+    }),
+  ),
   title: z.string(),
   description: z.string(),
   fields: z.array(fieldSchema),
   ajvSchema: z.record(z.string(), z.any()),
   endpoint: z.object({
     url: z.string().url(),
-    headers: z.record(z.string(), z.string()),
+    headers: z.array(z.object({ key: z.string(), value: z.string() })),
   }),
   formCode: z.string(),
   createdOn: z.string(),

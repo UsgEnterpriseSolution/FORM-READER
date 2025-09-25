@@ -31,6 +31,7 @@ import {
 import { Loader2 } from "lucide-react";
 import ConfigImage from "./ConfigImage";
 import ConfigDetails from "./ConfigDetails";
+import ConfigEndpoint from "./ConfigEndpoint";
 
 type ConfigEditorProps = {
   children: React.ReactNode;
@@ -114,6 +115,8 @@ export default function ConfigEditor(props: ConfigEditorProps) {
           <ConfigImage />
 
           <ConfigDetails />
+
+          <ConfigEndpoint />
 
           <div className="space-y-3">
             <div className="flex items-center justify-between">

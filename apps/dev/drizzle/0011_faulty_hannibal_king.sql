@@ -1,0 +1,1 @@
+ALTER TABLE "tb_config" ALTER COLUMN "images" DROP DEFAULT;

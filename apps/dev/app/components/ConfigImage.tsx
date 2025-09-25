@@ -12,13 +12,16 @@ import {
   XIcon,
 } from "lucide-react";
 
-import { formatBytes, useFileUpload } from "~/hooks/use-file-upload";
+import {
+  formatBytes,
+  useFileUpload,
+  type FileWithPreview,
+} from "~/hooks/useFileUpload";
 import { Button } from "~/components/ui/button";
-import { dataURLToObjectURL } from "~/utils/functions";
 import { useActions, useConfigImages } from "~/zustand";
-import { useEffect } from "react";
-import { nanoid } from "nanoid";
 import { Input } from "./ui/input";
+import { dataURLToObjectURL } from "~/utils/functions";
+import { nanoid } from "nanoid";
 
 const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
   const fileType = file.file instanceof File ? file.file.type : file.file.type;
@@ -55,31 +58,35 @@ const getFileIcon = (file: { file: File | { type: string; name: string } }) => {
   return <FileIcon className="size-4 opacity-60" />;
 };
 
-// Create some dummy initial files
-// const initialFiles = [
-//   {
-//     name: "document.pdf",
-//     size: 528737,
-//     type: "application/pdf",
-//     url: "https://example.com/document.pdf",
-//     id: "document.pdf-1744638436563-8u5xuls",
-//   },
-// ];
-
 export default function ConfigImage() {
   const maxSize = 10 * 1024 * 1024; // 10MB default
   const maxFiles = 10;
 
   const images = useConfigImages();
-  const initialFiles = images.map((img) => ({
-    id: nanoid(),
-    name: img.name,
-    size: img.size,
-    type: img.type,
-    url: dataURLToObjectURL(img.dataUrl),
-  }));
-
   const { setConfigImgs } = useActions();
+
+  const transformFunc = (files: typeof images) => {
+    const fileArray: FileWithPreview[] = [];
+
+    for (const file of files) {
+      const id = nanoid();
+      const preview = dataURLToObjectURL(file.dataUrl);
+
+      fileArray.push({
+        id,
+        preview,
+        file: {
+          id,
+          url: preview,
+          name: file.name,
+          size: file.size,
+          type: file.type,
+        },
+      });
+    }
+
+    return fileArray;
+  };
 
   const [
     { files, isDragging, errors },
@@ -98,9 +105,10 @@ export default function ConfigImage() {
     multiple: true,
     maxFiles,
     maxSize,
-    initialFiles,
     onFilesAdded: setConfigImgs,
     onFilesChange: setConfigImgs,
+    files: images,
+    transformFunc,
   });
 
   return (

@@ -6,11 +6,12 @@ import {
   jsonb,
   timestamp,
 } from "drizzle-orm/pg-core";
-import type { ConfigEndpointObj, FieldObj } from "~/types";
+import type { ConfigEndpointObj, ConfigImg, FieldObj } from "~/types";
 
 export const tbConfig = pgTable("tb_config", {
   id: serial("id").primaryKey(),
   configRef: uuid("config_ref").defaultRandom().unique().notNull(),
+  images: jsonb("images").$type<ConfigImg[]>().notNull(),
   title: varchar("title").notNull(),
   description: varchar("description").notNull(),
   fields: jsonb("fields").$type<FieldObj[]>().notNull(),
